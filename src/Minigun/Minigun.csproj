@@ -66,4 +66,8 @@
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\LICENSE.txt" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Mindscape.Raygun4Net.AspNetCore" Version="11.1.1" />
+    </ItemGroup>
+
 </Project>

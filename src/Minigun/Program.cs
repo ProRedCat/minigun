@@ -1,3 +1,5 @@
+using Mindscape.Raygun4Net.AspNetCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,6 +14,9 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+builder.Services.AddRaygun(builder.Configuration);
+builder.Services.AddRaygunUserProvider();
 
 app.UseHttpsRedirection();
 app.UseRouting();
