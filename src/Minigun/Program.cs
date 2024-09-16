@@ -5,6 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddRaygun(builder.Configuration);
+builder.Services.AddRaygunUserProvider();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -15,8 +18,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-builder.Services.AddRaygun(builder.Configuration);
-builder.Services.AddRaygunUserProvider();
+app.UseRaygun();
 
 app.UseHttpsRedirection();
 app.UseRouting();
