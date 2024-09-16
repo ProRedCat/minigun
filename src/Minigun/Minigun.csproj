@@ -1,4 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <Target Name="PreBuild" BeforeTargets="Build">
+        <!-- Run bun install if Bun exists and .setup-done doesn't exist -->
+        <Exec Command="bun install" WorkingDirectory="Tailwind" />
+
+        <!-- Build tailwind styles using Bun  -->
+        <Exec Command="bun run css:build" WorkingDirectory="Tailwind" />
+    </Target>
     
     <ItemGroup>
         <PackageReference Include="Mindscape.Raygun4Net.AspNetCore"/>
