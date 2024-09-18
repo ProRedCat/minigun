@@ -6,6 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddRaygun(builder.Configuration);
 builder.Services.AddRaygunUserProvider();
 
@@ -34,7 +36,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseRaygun();
 
-// app.UseRaygunPatMiddleware();
+app.UseRaygunPatMiddleware();
 
 app.UseHttpsRedirection();
 app.UseRouting();

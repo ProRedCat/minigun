@@ -3,7 +3,6 @@ using Minigun.Areas.Home.Controllers;
 
 namespace Minigun.Areas.CrashReporting.Controllers;
 
-[Route("crashreporting")]
 [Area("CrashReporting")]
 public class CrashReportingController : Controller
 {
@@ -14,6 +13,7 @@ public class CrashReportingController : Controller
         _logger = logger;
     }
 
+    [HttpGet("/crashreporting")]
     public IActionResult Index()
     {
         return View();
