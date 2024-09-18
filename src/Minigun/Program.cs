@@ -1,4 +1,5 @@
 using Mindscape.Raygun4Net.AspNetCore;
+using Minigun.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseRaygun();
+
+app.UseRaygunPatMiddleware();
 
 app.UseHttpsRedirection();
 app.UseRouting();
