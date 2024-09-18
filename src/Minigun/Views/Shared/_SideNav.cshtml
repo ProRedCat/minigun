@@ -1,7 +1,7 @@
 ﻿<!-- Navigation Bar -->
 <nav id="responsive-nav" class="bg-primary-navy-dark h-screen p-4 transition-all duration-300 ease-in-out overflow-x-hidden flex flex-col">
     <!-- Logo Section -->
-    <div class="mb-10 flex items-center">
+    <div class="mb-10">
         <!-- Collapsed Logo -->
         <img src="/images/svg/raygun-logo.svg" alt="Raygun" class="w-8 h-8 logo-collapsed" />
         <!-- Expanded Logo -->
@@ -34,10 +34,6 @@
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Users</span>
             </a>
         </li>
-    </ul>
-
-    <!-- Footer Links -->
-    <ul class="mt-4 space-y-4">
         <li>
             <a href="/manage-teams" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light group">
                 <img src="/images/svg/team-icon.svg" alt="" class="w-6 h-6">
@@ -97,12 +93,17 @@
     }
 
     #nav-toggle {
-        align-self: flex-start;
+        align-self: flex-end;
+    }
+
+    #nav-toggle.minimized {
+        align-self: center;
     }
 </style>
 
 <script>
     document.getElementById('nav-toggle').addEventListener('click', function() {
         document.getElementById('responsive-nav').classList.toggle('minimized');
+        document.getElementById('nav-toggle').classList.toggle('minimized');
     });
 </script>
