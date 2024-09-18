@@ -16,7 +16,9 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        return View();
+        if (Request.Cookies["RaygunPAT"] == null) return View();
+        
+        return Redirect("/crashreporting");
     }
 
     [HttpPost("/register-pat")]
