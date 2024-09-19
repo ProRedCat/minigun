@@ -6,9 +6,9 @@ namespace Minigun.Areas.CrashReporting.Controllers;
 [Area("CrashReporting")]
 public class CrashReportingController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly ILogger<CrashReportingController> _logger;
 
-    public CrashReportingController(ILogger<HomeController> logger)
+    public CrashReportingController(ILogger<CrashReportingController> logger)
     {
         _logger = logger;
     }
