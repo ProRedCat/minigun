@@ -15,7 +15,7 @@
             </aside>
             <main role="main" class="flex-grow">
                 <div>
-                    @await Html.PartialAsync("/Areas/Shared/_ApplicationsPartial.cshtml", ViewData["Applications"])
+                    @await Component.InvokeAsync("ApplicationDropdown")
                 </div>
                 
                 @RenderBody()
