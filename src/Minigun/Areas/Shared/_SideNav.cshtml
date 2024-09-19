@@ -1,0 +1,104 @@
+﻿<!-- Navigation Bar -->
+<nav id="responsive-nav" class="bg-primary-navy-dark h-screen p-4 transition-all duration-300 ease-in-out overflow-x-hidden flex flex-col">
+    <!-- Logo Section -->
+    <div class="mb-10">
+        <!-- Collapsed Logo -->
+        <img src="/images/svg/raygun-logo.svg" alt="Raygun" class="w-8 h-8 logo-collapsed" />
+        <!-- Expanded Logo -->
+        <img src="/images/svg/logo.svg" alt="Raygun" class="w-auto h-8 logo-expanded" />
+    </div>
+
+    <!-- Navigation Links -->
+    <ul class="space-y-4 flex-grow">
+        <li>
+            <a href="/crashreporting" class="flex items-center space-x-4 text-primary-raygun-blue group">
+                <img src="/images/svg/cr-icon.svg" alt="" class="w-6 h-6 ml-1">
+                <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Crash Reporting</span>
+            </a>
+        </li>
+        <li>
+            <a href="/rum" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light group">
+                <img src="/images/svg/rum-icon.svg" alt="" class="w-6 h-6 ml-1">
+                <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Real User Monitoring</span>
+            </a>
+        </li>
+        <li>
+            <a href="/deployments" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light group">
+                <img src="/images/svg/deployments-icon.svg" alt="" class="w-6 h-6 ml-1">
+                <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Deployments</span>
+            </a>
+        </li>
+        <li>
+            <a href="/users" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light group">
+                <img src="/images/svg/users-icon.svg" alt="" class="w-6 h-6 ml-1">
+                <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Users</span>
+            </a>
+        </li>
+        <li>
+            <a href="/manage-teams" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light group">
+                <img src="/images/svg/team-icon.svg" alt="" class="w-6 h-6 ml-1">
+                <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Manage Teams</span>
+            </a>
+        </li>
+        <li>
+            <a href="/settings" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light group">
+                <img src="/images/svg/settings-icon.svg" alt="" class="w-6 h-6 ml-1">
+                <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Settings</span>
+            </a>
+        </li>
+        <li>
+            <a href="/whats-new" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light group">
+                <img src="/images/svg/whatsnew-icon.svg" alt="" class="w-6 h-6 ml-1">
+                <span class="nav-text transition-opacity duration-300 whitespace-nowrap">What's New</span>
+            </a>
+        </li>
+    </ul>
+
+    <button id="nav-toggle" class="mt-4 text-white focus:outline-none">
+        <img src="/images/svg/nav-toggle.svg" alt="" class="w-6 h-6">
+    </button>
+</nav>
+
+<style>
+    /* Default navigation width (maximized) */
+    #responsive-nav {
+        width: 14rem; /* w-56 */
+    }
+
+    /* Minimized navigation width */
+    #responsive-nav.minimized {
+        width: 4rem; /* w-16 */
+    }
+
+    /* Logo visibility */
+    #responsive-nav.minimized .logo-expanded {
+        display: none;
+    }
+    #responsive-nav .logo-expanded {
+        display: block;
+    }
+    #responsive-nav.minimized .logo-collapsed {
+        display: block;
+    }
+    #responsive-nav .logo-collapsed {
+        display: none;
+    }
+
+    #responsive-nav.minimized .nav-text {
+        opacity: 0;
+        pointer-events: none;
+    }
+    #responsive-nav .nav-text {
+        opacity: 1;
+    }
+
+    #nav-toggle {
+        align-self: flex-end;
+    }
+</style>
+
+<script>
+    document.getElementById('nav-toggle').addEventListener('click', function() {
+        document.getElementById('responsive-nav').classList.toggle('minimized');
+    });
+</script>
