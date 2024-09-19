@@ -9,19 +9,17 @@
     <link rel="stylesheet" href="~/css/tailwind.css" asp-append-version="true"/>
 </head>
     <body>
-        <div class="container">
-            <div class="flex">
-                <aside>
-                    @await Html.PartialAsync("/Areas/Shared/_SideNav.cshtml")
-                </aside>
-                <main role="main" class="pb-3">
-                    <div>
-                        @await Html.PartialAsync("/Areas/Shared/_ApplicationsPartial.cshtml", ViewData["Applications"])
-                    </div>
-                    
-                    @RenderBody()
-                </main>
-            </div>
+        <div class="flex w-full">
+            <aside>
+                @await Html.PartialAsync("/Areas/Shared/_SideNav.cshtml")
+            </aside>
+            <main role="main" class="flex-grow">
+                <div>
+                    @await Html.PartialAsync("/Areas/Shared/_ApplicationsPartial.cshtml", ViewData["Applications"])
+                </div>
+                
+                @RenderBody()
+            </main>
         </div>
     </body>
 </html>

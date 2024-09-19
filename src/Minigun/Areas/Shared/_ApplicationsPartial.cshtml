@@ -1,17 +1,43 @@
 ﻿@model IEnumerable<Minigun.Models.Application>
 
-<div class="mb-4">
-    <div class="relative">
-        <select id="application-select" name="application" class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
+<div class="w-full p-2">
+    <div class="relative inline-block text-left w-56">
+        <!-- Dropdown button with first item pre-selected -->
+        <button class="flex items-center w-full ml-4 py-2 font-medium text-sm focus:outline-none"
+                onclick="toggleDropdown()">
+            <img src="images/svg/app-icon.svg" alt="Application Icon"/>
+            <p id="dropdown-text" class="ml-2">
+                @Model.First().name
+            </p>
+            <img src="images/svg/dropdown-icon.svg" alt="Dropdown Icon" class="ml-4"/>
+        </button>
+
+        <!-- Dropdown menu -->
+        <div id="dropdown-menu" class="absolute w-56 bg-white border border-gray-200 rounded-md shadow-lg hidden">
             @foreach (var application in Model)
             {
-                <option value="@application.identifier">@application.name</option>
+            <div class="dropdown-item px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
+                 onclick="selectApplication('@application.name')">
+                @application.name
+            </div>
             }
-        </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-            </svg>
         </div>
     </div>
 </div>
+
+
+<script>
+    function toggleDropdown() {
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        dropdownMenu.classList.toggle('hidden');
+    }
+
+    function selectApplication(applicationName) {
+        const dropdownText = document.getElementById('dropdown-text');
+        dropdownText.innerHTML = applicationName;
+
+        // Close dropdown after selection
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        dropdownMenu.classList.add('hidden');
+    }
+</script>
