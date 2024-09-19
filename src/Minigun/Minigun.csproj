@@ -14,6 +14,7 @@
     
     <ItemGroup>
       <Folder Include="Areas\CrashReporting\Models\" />
+      <Folder Include="Areas\Deployments\Models\" />
       <Folder Include="Areas\Home\Models\" />
       <Folder Include="Areas\Rum\Models\" />
     </ItemGroup>
