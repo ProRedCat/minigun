@@ -12,4 +12,19 @@
         <PackageReference Include="Mindscape.Raygun4Net.AspNetCore"/>
     </ItemGroup>
     
+    <ItemGroup>
+      <Folder Include="Areas\CrashReporting\Models\" />
+      <Folder Include="Areas\Home\Models\" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Shared\Error.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\_ViewImports.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\_ViewStart.cshtml" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Views\Shared\Error.cshtml" />
+    </ItemGroup>
+    
 </Project>
