@@ -20,8 +20,41 @@ public class CrashReportingController : Controller
     [HttpGet("/crashreporting")]
     public async Task<IActionResult> Index()
     {
-        ViewData["Applications"] = await _raygunApiService.ListApplicationsAsync(100);
-        Console.WriteLine(JsonSerializer.Serialize(ViewData["Applications"]));
-        return View();
+        var applications = await _raygunApiService.ListApplicationsAsync(100);
+    
+        if (applications == null || !applications.Any())
+        {
+            return NotFound("No applications found.");
+        }
+
+        var firstApplication = applications.First();
+    
+        return RedirectToAction("FullCrashPage", new { applicationIdentifier = firstApplication.identifier });
+    }
+    
+    [HttpGet("/crashreporting/{applicationIdentifier}")]
+    public async Task<IActionResult> FullCrashPage(string applicationIdentifier)
+    {
+        var applications = await _raygunApiService.ListApplicationsAsync(100);
+
+        if (applications == null || !applications.Any())
+        {
+            return NotFound("No applications found.");
+        }
+
+        var selectedApplication = applications.FirstOrDefault(app => app.identifier == applicationIdentifier);
+        if (selectedApplication != null)
+        {
+            // TODO: Make this nicer
+            applications.Remove(selectedApplication);
+            applications.Insert(0, selectedApplication);
+        }
+        
+        Console.WriteLine(JsonSerializer.Serialize(applications));
+        
+        // TODO: Not completely sold on this still
+        ViewData["Applications"] = applications;
+
+        return View("Index");
     }
 }
