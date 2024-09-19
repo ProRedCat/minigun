@@ -20,6 +20,7 @@
       <Folder Include="Areas\Settings\Models\" />
       <Folder Include="Areas\Teams\Models\" />
       <Folder Include="Areas\Users\Models\" />
+      <Folder Include="Areas\WhatsNew\Models\" />
     </ItemGroup>
     
     <ItemGroup>
