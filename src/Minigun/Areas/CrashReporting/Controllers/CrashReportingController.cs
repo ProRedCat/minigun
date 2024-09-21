@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
-using Minigun.Areas.Home.Controllers;
+﻿using Microsoft.AspNetCore.Mvc;
 using Minigun.Services;
 
 namespace Minigun.Areas.CrashReporting.Controllers;
@@ -29,12 +27,22 @@ public class CrashReportingController : Controller
 
         var firstApplication = applications.First();
 
-        return RedirectToAction("FullCrashPage", new { applicationIdentifier = firstApplication.identifier });
+        return RedirectToAction("FullCrashPage", new { applicationIdentifier = firstApplication.Identifier });
     }
 
     [HttpGet("/crashreporting/{applicationIdentifier}")]
-    public IActionResult FullCrashPage(string applicationIdentifier)
+    public async Task<IActionResult> FullCrashPage(string applicationIdentifier)
     {
-        return View("Index");
+        var errorGroups = await _raygunApiService.ListErrorGroupsAsync(applicationIdentifier) ?? [];
+        
+        return View("Index", errorGroups);
+    }
+    
+    [HttpGet("/crashreporting/{applicationIdentifier}/error-groups")]
+    public async Task<IActionResult> ErrorGroupsPartial(string applicationIdentifier)
+    {
+        var errorGroups = await _raygunApiService.ListErrorGroupsAsync(applicationIdentifier) ?? [];
+        
+        return PartialView("_ErrorGroups", errorGroups);
     }
 }

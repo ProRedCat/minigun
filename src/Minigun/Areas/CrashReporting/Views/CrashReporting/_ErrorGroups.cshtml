@@ -1,0 +1,16 @@
+﻿@model IEnumerable<Minigun.Models.ErrorGroup>
+
+@if (Model.Any())
+{
+    @foreach (var errorGroup in Model)
+    {
+        <div class="flex space-x-4">
+            <p>@errorGroup.Message</p>
+            <p>@errorGroup.LastOccurredAt</p>
+        </div>
+    }
+}
+else
+{
+    <div>No errors!!</div>
+}

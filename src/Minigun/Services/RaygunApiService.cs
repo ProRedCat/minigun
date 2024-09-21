@@ -8,6 +8,17 @@ public class RaygunApiService : IRaygunApiService
 {
     private readonly HttpClient _httpClient;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    
+    private static readonly JsonSerializerOptions JsonOptions;
+
+    static RaygunApiService()
+    {
+        JsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+    }
 
     public RaygunApiService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
     {
@@ -24,11 +35,12 @@ public class RaygunApiService : IRaygunApiService
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
     }
-    
-    public async Task<List<Application>?> ListApplicationsAsync(int? count = null, int? offset = null, string[]? orderby = null)
+
+    public async Task<List<Application>?> ListApplicationsAsync(int? count = null, int? offset = null,
+        string[]? orderby = null)
     {
         SetAuthorizationHeader();
-        
+
         var query = new List<string>();
         if (count.HasValue) query.Add($"count={count.Value}");
         if (offset.HasValue) query.Add($"offset={offset.Value}");
@@ -39,6 +51,23 @@ public class RaygunApiService : IRaygunApiService
         response.EnsureSuccessStatusCode();
 
         var responseContent = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<List<Application>>(responseContent);
+        return JsonSerializer.Deserialize<List<Application>>(responseContent, JsonOptions);
+    }
+
+    public async Task<List<ErrorGroup>?> ListErrorGroupsAsync(string applicationId, int? count = null, int? offset = null, string[]? orderby = null)
+    {
+        SetAuthorizationHeader();
+
+        var query = new List<string>();
+        if (count.HasValue) query.Add($"count={count.Value}");
+        if (offset.HasValue) query.Add($"offset={offset.Value}");
+        if (orderby != null && orderby.Length > 0) query.Add($"orderby={string.Join(",", orderby)}");
+
+        var url = $"applications/{applicationId}/error-groups?" + string.Join("&", query);
+        var response = await _httpClient.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<List<ErrorGroup>>(responseContent, JsonOptions);
     }
 }
