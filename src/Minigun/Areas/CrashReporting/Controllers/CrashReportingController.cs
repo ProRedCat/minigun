@@ -3,6 +3,7 @@ using Minigun.Services;
 
 namespace Minigun.Areas.CrashReporting.Controllers;
 
+[Route("crashreporting")]
 [Area("CrashReporting")]
 public class CrashReportingController : Controller
 {
@@ -15,7 +16,7 @@ public class CrashReportingController : Controller
         _raygunApiService = raygunApiService;
     }
 
-    [HttpGet("/crashreporting")]
+    [HttpGet("/")]
     public async Task<IActionResult> Index()
     {
         var applications = await _raygunApiService.ListApplicationsAsync(100);
@@ -30,15 +31,17 @@ public class CrashReportingController : Controller
         return RedirectToAction("FullCrashPage", new { applicationIdentifier = firstApplication.Identifier });
     }
 
-    [HttpGet("/crashreporting/{applicationIdentifier}")]
+    [HttpGet("/{applicationIdentifier}")]
     public async Task<IActionResult> FullCrashPage(string applicationIdentifier)
     {
+        // TODO: See if there is a nicer way to handle this, as this method is identical to the one below
+        // this may be handled once we move to OnLoad fetching of partials rather than full page load
         var errorGroups = await _raygunApiService.ListErrorGroupsAsync(applicationIdentifier) ?? [];
         
         return View("Index", errorGroups);
     }
     
-    [HttpGet("/crashreporting/{applicationIdentifier}/error-groups")]
+    [HttpGet("/{applicationIdentifier}/error-groups")]
     public async Task<IActionResult> ErrorGroupsPartial(string applicationIdentifier)
     {
         var errorGroups = await _raygunApiService.ListErrorGroupsAsync(applicationIdentifier) ?? [];
