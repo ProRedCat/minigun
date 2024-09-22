@@ -3,52 +3,52 @@
     <!-- Logo Section -->
     <div class="mb-10">
         <!-- Collapsed Logo -->
-        <img src="/images/svg/raygun-logo.svg" alt="Raygun" class="w-8 h-8 logo-collapsed" />
+        <img src="/images/svg/raygun-logo.svg" alt="Raygun" class="w-8 h-8 logo-collapsed"/>
         <!-- Expanded Logo -->
-        <img src="/images/svg/logo.svg" alt="Raygun" class="w-auto h-8 logo-expanded" />
+        <img src="/images/svg/logo.svg" alt="Raygun" class="w-auto h-8 logo-expanded"/>
     </div>
 
     <!-- Navigation Links -->
     <ul class="space-y-4 flex-grow">
         <li>
-            <a href="@Url.Action("Index", "CrashReporting", new {Area = "CrashReporting"})" class="flex items-center space-x-4 text-primary-raygun-blue group">
-                <img src="/images/svg/cr-icon.svg" alt="" class="w-6 h-6 ml-1">
+            <a href="@Url.Action("Index", "CrashReporting", new { Area = "CrashReporting" })" class="flex items-center space-x-4 text-secondary-blue-grey nav-link group">
+                <img src="/images/svg/cr-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Crash Reporting</span>
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Index", "Rum", new {Area = "Rum"})" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light group">
-                <img src="/images/svg/rum-icon.svg" alt="" class="w-6 h-6 ml-1">
+            <a href="@Url.Action("Index", "Rum", new { Area = "Rum" })" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
+                <img src="/images/svg/rum-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Real User Monitoring</span>
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Index", "Deployments", new {Area = "Deployments"})" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light group">
-                <img src="/images/svg/deployments-icon.svg" alt="" class="w-6 h-6 ml-1">
+            <a href="@Url.Action("Index", "Deployments", new { Area = "Deployments" })" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
+                <img src="/images/svg/deployments-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Deployments</span>
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Index", "Users", new {Area = "Users"})" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light group">
-                <img src="/images/svg/users-icon.svg" alt="" class="w-6 h-6 ml-1">
+            <a href="@Url.Action("Index", "Users", new { Area = "Users" })" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
+                <img src="/images/svg/users-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Users</span>
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Index", "Teams", new {Area = "Teams"})" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light group">
-                <img src="/images/svg/team-icon.svg" alt="" class="w-6 h-6 ml-1">
+            <a href="@Url.Action("Index", "Teams", new { Area = "Teams" })" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
+                <img src="/images/svg/team-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Manage Teams</span>
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Index", "Settings", new {Area = "Settings"})" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light group">
-                <img src="/images/svg/settings-icon.svg" alt="" class="w-6 h-6 ml-1">
+            <a href="@Url.Action("Index", "Settings", new { Area = "Settings" })" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
+                <img src="/images/svg/settings-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Settings</span>
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Index", "WhatsNew", new {Area = "WhatsNew"})" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light group">
-                <img src="/images/svg/whatsnew-icon.svg" alt="" class="w-6 h-6 ml-1">
+            <a href="@Url.Action("Index", "WhatsNew", new { Area = "WhatsNew" })" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
+                <img src="/images/svg/whatsnew-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">What's New</span>
             </a>
         </li>
@@ -59,6 +59,7 @@
     </button>
 </nav>
 
+<!-- CSS -->
 <style>
     /* Default navigation width (maximized) */
     #responsive-nav {
@@ -95,10 +96,43 @@
     #nav-toggle {
         align-self: flex-end;
     }
+
+    /* Active nav item */
+    .active {
+        color: #2C9AF0;
+    }
 </style>
 
 <script>
     document.getElementById('nav-toggle').addEventListener('click', function() {
         document.getElementById('responsive-nav').classList.toggle('minimized');
+    });
+
+    // Function to highlight correct nav item based on URL
+    function highlightNav() {
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentPath = window.location.pathname;
+
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+
+            // Remove previous active class
+            link.classList.remove('active');
+
+            // Check if the current path starts with the href
+            if (currentPath.startsWith(href)) {
+                console.log(currentPath, href)
+                link.classList.add('active');
+            }
+        });
+    }
+
+    // Run on page load
+    highlightNav();
+
+    // HTMX event listener for URL changes
+    document.body.addEventListener('htmx:pushedIntoHistory', function() {
+        console.log("Pushed into history");
+        highlightNav();
     });
 </script>
