@@ -1,23 +1,26 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Minigun - @ViewData["Title"]</title>
-        <script type="importmap"></script>
-        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-        <link rel="stylesheet" href="~/css/tailwind.css" asp-append-version="true"/>
-    </head>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Minigun - @ViewData["Title"]</title>
+    <script type="importmap"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/tailwind.css" asp-append-version="true"/>
+</head>
     <body>
-        <div class="container">
-            <div class="flex">
-                <aside>
-                    @await Html.PartialAsync("/Areas/Shared/_SideNav.cshtml")
-                </aside>
-                <main role="main" class="pb-3">
-                    @RenderBody()
-                </main>
-            </div>
+        <div class="flex w-full">
+            <aside>
+                @await Html.PartialAsync("/Areas/Shared/_SideNav.cshtml")
+            </aside>
+            <main role="main" class="flex-grow">
+                <div>
+                    @await Component.InvokeAsync("ApplicationDropdown")
+                </div>
+                
+                @RenderBody()
+            </main>
         </div>
     </body>
 </html>

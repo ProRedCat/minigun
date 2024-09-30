@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Razor;
 using Mindscape.Raygun4Net.AspNetCore;
 using Minigun.Middleware;
+using Minigun.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddRaygun(builder.Configuration);
 builder.Services.AddRaygunUserProvider();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient<IRaygunApiService, RaygunApiService>();
 
 builder.Services.Configure<RouteOptions>(options =>
 {

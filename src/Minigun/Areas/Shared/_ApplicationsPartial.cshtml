@@ -1,0 +1,47 @@
+﻿@model IEnumerable<Minigun.Models.Application>
+
+<div class="w-full p-2 border-secondary-blue-grey border-b">
+    <div class="relative inline-block text-left w-56">
+        <!-- Dropdown button with first item pre-selected -->
+        <button class="flex items-center w-full ml-4 py-2 font-medium text-sm focus:outline-none"
+                onclick="toggleDropdown()">
+            <img src="/images/svg/app-icon.svg" alt="Application Icon"/>
+            <p id="dropdown-text" class="ml-2">
+                @Model.First().Name
+            </p>
+            <img src="/images/svg/dropdown-icon.svg" alt="Dropdown Icon" class="ml-4"/>
+        </button>
+
+        <!-- Dropdown menu -->
+        <div id="dropdown-menu" class="absolute w-56 bg-white border border-gray-200 rounded-md shadow-lg hidden">
+            @foreach (var application in Model)
+            {
+                <div class="dropdown-item px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
+                     hx-get="@Url.Action("ErrorGroupsPartial", "CrashReporting", new { applicationIdentifier = application.Identifier })"
+                     hx-target="#crash-reporting-content"
+                     hx-swap="innerHTML"
+                     hx-trigger="click"
+                     hx-push-url="/crashreporting/@application.Identifier/"
+                     onclick="selectApplication('@application.Name', '@application.Identifier')">
+                    @application.Name
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleDropdown() {
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        dropdownMenu.classList.toggle('hidden');
+    }
+
+    function selectApplication(applicationName) {
+        const dropdownText = document.getElementById('dropdown-text');
+        dropdownText.innerHTML = applicationName;
+
+        // Close dropdown after selection
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        dropdownMenu.classList.add('hidden');
+    }
+</script>

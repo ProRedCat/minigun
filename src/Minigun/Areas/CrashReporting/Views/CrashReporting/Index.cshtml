@@ -1,5 +1,10 @@
-﻿@{
+﻿@model IEnumerable<Minigun.Models.ErrorGroup>
+
+@{
     ViewData["Title"] = "Crash Reporting";
 }
 
-Minigun crash reporting!!
+<div id="crash-reporting-content">
+    @await Html.PartialAsync("_ErrorGroups", Model)
+</div>
+

@@ -21,6 +21,7 @@
       <Folder Include="Areas\Teams\Models\" />
       <Folder Include="Areas\Users\Models\" />
       <Folder Include="Areas\WhatsNew\Models\" />
+      <Folder Include="ViewModels\" />
     </ItemGroup>
     
     <ItemGroup>
