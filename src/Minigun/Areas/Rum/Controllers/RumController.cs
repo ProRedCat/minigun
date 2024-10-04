@@ -18,4 +18,9 @@ public class RumController : Controller
     {
         return View();
     }
+
+    public IActionResult CoreWebVitalsPartial()
+    {
+        return Content($"I am Core Web Vital partial {DateTime.Now}");
+    }
 }

@@ -4,7 +4,6 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Minigun - @ViewData["Title"]</title>
-    <script type="importmap"></script>
     <script src="https://unpkg.com/htmx.org@2.0.2"></script>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/tailwind.css" asp-append-version="true"/>
@@ -15,7 +14,7 @@
                 @await Html.PartialAsync("/Areas/Shared/_SideNav.cshtml")
             </aside>
             <main role="main" class="flex-grow">
-                <div>
+                <div id="application-dropdown">
                     @await Component.InvokeAsync("ApplicationDropdown")
                 </div>
                 
