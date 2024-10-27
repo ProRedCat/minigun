@@ -1,19 +1,26 @@
 ﻿@model ApplicationsPartialModel
 
-<div class="w-full p-2 border-secondary-blue-grey border-b ">
-    <div class="relative inline-block text-left w-56">
+<div class="w-full p-2 border-secondary-blue-grey border-b">
+    <div class="relative ml-4 inline-block text-left w-96">
         <!-- Dropdown button with first item pre-selected -->
-        <button class="flex items-center w-full ml-4 py-2 font-medium text-sm focus:outline-none"
+        <button class="flex justify-between items-center w-full py-2 font-medium text-sm focus:outline-none"
                 onclick="toggleDropdown()">
-            <img src="/images/svg/app-icon.svg" alt="Application Icon"/>
-            <p id="dropdown-text" class="ml-2">
-                @Model.Applications.First().Name
-            </p>
+            <div class="flex space-x-2 items-center">
+                <img src="/images/svg/app-icon.svg" alt="Application Icon"/>
+                <p id="dropdown-text" class="ml-2">
+                    @Model.Applications.First().Name
+                </p>
+            </div>
             <img src="/images/svg/dropdown-icon.svg" alt="Dropdown Icon" class="ml-4"/>
         </button>
 
         <!-- Dropdown menu -->
-        <div id="dropdown-menu" class="absolute w-96 overflow-y-auto h-96 bg-white border border-gray-200 rounded-md shadow-lg hidden">
+        <div id="dropdown-menu" class="absolute w-full overflow-y-auto max-h-96 bg-white border border-gray-200 rounded-t-none rounded-md shadow-lg hidden">
+            <!-- Search input -->
+            <div class="p-2">
+                <input type="text" id="dropdown-search" placeholder="Search..." class="w-full border border-gray-300 rounded-md p-2">
+            </div>
+            <!-- Application items -->
             @foreach (var application in Model.Applications)
             {
                 <div class="dropdown-item px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
@@ -23,7 +30,7 @@
                      hx-trigger="click"
                      hx-indicator="@Model.HtmxContext.LoadingIndicator"
                      hx-push-url="/@Model.HtmxContext.RoutePrefix/@application.Identifier/"
-                     onclick="selectApplication('@application.Name', '@application.Identifier')">
+                     onclick="selectApplication('@application.Name')">
                     @application.Name
                 </div>
             }
@@ -35,6 +42,11 @@
     function toggleDropdown() {
         const dropdownMenu = document.getElementById('dropdown-menu');
         dropdownMenu.classList.toggle('hidden');
+
+        // Focus the search input when dropdown is opened
+        if (!dropdownMenu.classList.contains('hidden')) {
+            document.getElementById('dropdown-search').focus();
+        }
     }
 
     function selectApplication(applicationName) {
@@ -45,4 +57,23 @@
         const dropdownMenu = document.getElementById('dropdown-menu');
         dropdownMenu.classList.add('hidden');
     }
+
+    function filterApplications() {
+        const filter = document.getElementById('dropdown-search').value.toLowerCase();
+        const items = document.querySelectorAll('#dropdown-menu .dropdown-item');
+
+        items.forEach(function(item) {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(filter)) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    // Add event listener for the search input
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('dropdown-search').addEventListener('keyup', filterApplications);
+    });
 </script>
