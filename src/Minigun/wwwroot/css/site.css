@@ -16,3 +16,15 @@ html {
   position: relative;
   min-height: 100%;
 }
+
+.loading-container .loading-indicator {
+  display: none;
+}
+
+.loading-container.htmx-request .loading-indicator {
+  display: flex !important;
+}
+
+.loading-container.htmx-request > *:not(.loading-indicator) {
+  display: none !important;
+}

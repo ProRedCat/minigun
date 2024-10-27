@@ -37,13 +37,16 @@ public class ApplicationDropdownViewComponent : ViewComponent
             {
                 Controller = "CrashReporting",
                 Action = "ErrorGroupsPartial",
-                RoutePrefix = route
+                RoutePrefix = route,
+                LoadingIndicator = ".loading-container",
             },
             "rum" => new ApplicationsPartialHtmxModel
             {
                 Controller = "Rum",
                 Action = "CoreWebVitalsPartial",
-                RoutePrefix = route
+                RoutePrefix = route,
+                LoadingIndicator = ".loading-container",
+
             },
             _ => throw new ArgumentException($"Unknown route: {route}")
         };

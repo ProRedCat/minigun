@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Minigun.Areas.CrashReporting.Models;
 using Minigun.Services;
 
 namespace Minigun.Areas.CrashReporting.Controllers;
@@ -20,7 +21,7 @@ public class CrashReportingController : Controller
     {
         var applications = await _raygunApiService.ListApplicationsAsync(100);
 
-        if (applications == null || !applications.Any())
+        if (applications.Count == 0)
         {
             return NotFound("No applications found.");
         }
@@ -33,18 +34,51 @@ public class CrashReportingController : Controller
     [HttpGet("/crashreporting/{applicationIdentifier}")]
     public async Task<IActionResult> FullCrashPage(string applicationIdentifier)
     {
-        // TODO: See if there is a nicer way to handle this, as this method is identical to the one below
-        // this may be handled once we move to OnLoad fetching of partials rather than full page load
-        var errorGroups = await _raygunApiService.ListErrorGroupsAsync(applicationIdentifier) ?? [];
+        var endTime = DateTime.Now;
+        var startTime = endTime.AddDays(-7);
+
+        var errorGroupsTask = _raygunApiService.ListErrorGroupsAsync(applicationIdentifier, orderby: ["lastOccurredAt desc"]);
+        var timeseriesTask = _raygunApiService.GetErrorTimeseriesAsync(applicationIdentifier, startTime, endTime);
+
+        var errorGroups = await errorGroupsTask;
+        var timeseries = await timeseriesTask;
         
-        return View("Index", errorGroups);
+        var filteredGroups = errorGroups
+            .Where(e => e.LastOccurredAt != null)
+            .Where(e => DateTime.TryParse(e.LastOccurredAt, out var date) && date > startTime)
+            .ToList();
+
+        var viewModel = new CrashReportingViewModel(
+            filteredGroups,
+            timeseries
+        );
+
+        return View("Index", viewModel);
     }
-    
+
     [HttpGet("/crashreporting/{applicationIdentifier}/error-groups")]
     public async Task<IActionResult> ErrorGroupsPartial(string applicationIdentifier)
     {
-        var errorGroups = await _raygunApiService.ListErrorGroupsAsync(applicationIdentifier) ?? [];
+        var endTime = DateTime.Now;
+        var startTime = endTime.AddDays(-7);
+
+        var errorGroupsTask =
+            _raygunApiService.ListErrorGroupsAsync(applicationIdentifier, orderby: ["lastOccurredAt desc"]);
+        var timeseriesTask = _raygunApiService.GetErrorTimeseriesAsync(applicationIdentifier, startTime, endTime);
         
-        return PartialView("_ErrorGroups", errorGroups);
+        var errorGroups = await errorGroupsTask;
+        var timeseries = await timeseriesTask;
+        
+        var filteredGroups = errorGroups
+            .Where(e => e.LastOccurredAt != null)
+            .Where(e => DateTime.TryParse(e.LastOccurredAt, out var date) && date > startTime)
+            .ToList();
+
+        var viewModel = new CrashReportingViewModel(
+            filteredGroups,
+            timeseries
+        );
+
+        return PartialView("_ErrorSummary", viewModel);
     }
 }

@@ -1,6 +1,6 @@
 ﻿@model ApplicationsPartialModel
 
-<div class="w-full p-2 border-secondary-blue-grey border-b">
+<div class="w-full p-2 border-secondary-blue-grey border-b ">
     <div class="relative inline-block text-left w-56">
         <!-- Dropdown button with first item pre-selected -->
         <button class="flex items-center w-full ml-4 py-2 font-medium text-sm focus:outline-none"
@@ -13,7 +13,7 @@
         </button>
 
         <!-- Dropdown menu -->
-        <div id="dropdown-menu" class="absolute w-56 bg-white border border-gray-200 rounded-md shadow-lg hidden">
+        <div id="dropdown-menu" class="absolute w-96 overflow-y-auto h-96 bg-white border border-gray-200 rounded-md shadow-lg hidden">
             @foreach (var application in Model.Applications)
             {
                 <div class="dropdown-item px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
@@ -21,6 +21,7 @@
                      hx-target="#@Model.HtmxContext.RoutePrefix-content"
                      hx-swap="innerHTML"
                      hx-trigger="click"
+                     hx-indicator="@Model.HtmxContext.LoadingIndicator"
                      hx-push-url="/@Model.HtmxContext.RoutePrefix/@application.Identifier/"
                      onclick="selectApplication('@application.Name', '@application.Identifier')">
                     @application.Name

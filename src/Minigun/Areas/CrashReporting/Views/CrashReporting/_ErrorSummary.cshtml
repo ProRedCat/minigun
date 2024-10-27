@@ -1,0 +1,5 @@
+﻿@model Minigun.Areas.CrashReporting.Models.CrashReportingViewModel
+
+@await Html.PartialAsync("_ErrorTimeseries", Model.ErrorsTimeseries)
+
+@await Html.PartialAsync("_ErrorGroups", Model.ErrorGroups)

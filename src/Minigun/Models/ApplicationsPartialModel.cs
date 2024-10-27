@@ -11,4 +11,5 @@ public class ApplicationsPartialHtmxModel
     public required string Controller { get; set; }
     public required string Action { get; set; }
     public required string RoutePrefix { get; set; }
+    public required string LoadingIndicator { get; set; }
 }
