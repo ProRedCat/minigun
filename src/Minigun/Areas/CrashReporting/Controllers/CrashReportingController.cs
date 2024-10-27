@@ -44,8 +44,7 @@ public class CrashReportingController : Controller
         var timeseries = await timeseriesTask;
         
         var filteredGroups = errorGroups
-            .Where(e => e.LastOccurredAt != null)
-            .Where(e => DateTime.TryParse(e.LastOccurredAt, out var date) && date > startTime)
+            .Where(e => e.LastOccurredAt > startTime)
             .ToList();
 
         var viewModel = new CrashReportingViewModel(
@@ -70,8 +69,7 @@ public class CrashReportingController : Controller
         var timeseries = await timeseriesTask;
         
         var filteredGroups = errorGroups
-            .Where(e => e.LastOccurredAt != null)
-            .Where(e => DateTime.TryParse(e.LastOccurredAt, out var date) && date > startTime)
+            .Where(e => e.LastOccurredAt > startTime)
             .ToList();
 
         var viewModel = new CrashReportingViewModel(
