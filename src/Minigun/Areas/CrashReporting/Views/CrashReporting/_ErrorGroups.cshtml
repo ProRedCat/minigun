@@ -4,11 +4,44 @@
 @using Minigun.Utilities
 
 <div class="loading-container">
-    <div class="loading-indicator flex items-center justify-center h-56 border border-secondary-blue-grey m-4">
-        @await Html.PartialAsync("_LoadingSpinner")
+    <div class="loading-indicator border border-secondary-blue-grey m-4 bg-white overflow-hidden">
+        <div class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200">
+            <div class="px-4 py-3 bg-gray-100">
+                Active <span class="ml-2 bg-red-500 text-white rounded-full px-2 py-1">-</span>
+            </div>
+            <div class="px-4 py-3">
+                Resolved <span class="ml-2 bg-green-500 text-white rounded-full px-2 py-1">-</span>
+            </div>
+            <div class="px-4 py-3">
+                Ignored <span class="ml-2 bg-blue-500 text-white rounded-full px-2 py-1">-</span>
+            </div>
+            <div class="px-4 py-3">
+                Permanently ignored <span class="ml-2 bg-yellow-500 text-white rounded-full px-2 py-1">-</span>
+            </div>
+        </div>
+
+        <table class="w-full text-sm text-left text-gray-500 table-fixed">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+                <th scope="col" class="p-4 w-12">
+                    <div class="flex items-center">
+                        <input id="checkbox-all" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                        <label for="checkbox-all" class="sr-only">checkbox</label>
+                    </div>
+                </th>
+                <th scope="col" class="px-4 py-2 w-2/3">Message</th>
+                <th scope="col" class="px-4 py-2 w-1/6">Last seen</th>
+                <th scope="col" class="px-4 py-2 w-1/6">Status</th>
+            </tr>
+            </thead>
+        </table>
+
+        <div class="flex items-center justify-center h-56">
+            @await Html.PartialAsync("_LoadingSpinner")
+        </div>
     </div>
 
-    <div class="m-4 bg-white shadow-md overflow-hidden border-gray-300">
+    <div class="m-4 bg-white border border-secondary-blue-grey overflow-hidden">
 
         <div class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200">
             <div class="px-4 py-3 bg-gray-100">
