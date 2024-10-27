@@ -22,7 +22,7 @@ html {
 }
 
 .loading-container.htmx-request .loading-indicator {
-  display: flex !important;
+  display: block !important;
 }
 
 .loading-container.htmx-request > *:not(.loading-indicator) {

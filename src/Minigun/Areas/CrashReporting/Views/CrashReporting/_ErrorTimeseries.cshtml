@@ -5,12 +5,24 @@
 }
 
 <div class="loading-container">
-    <div class="loading-indicator flex items-center justify-center h-56 border border-secondary-blue-grey m-4">
-        @await Html.PartialAsync("_LoadingSpinner")
+    <div class="loading-indicator h-[40vh] border border-secondary-blue-grey m-4">
+        <div class="w-full p-2 font-medium bg-gray-100">
+            Errors by hour
+        </div>
+
+        <div class="flex items-center justify-center h-[calc(40vh-40px)]">
+            @await Html.PartialAsync("_LoadingSpinner")
+        </div>
     </div>
 
-    <div class="w-full h-[40vh] p-4">
-        <canvas id="@chartId"></canvas>
+    <div class="w-full h-[40vh] border border-secondary-blue-grey m-4">
+        <div class="w-full p-2 font-medium bg-gray-100">
+            Errors by hour
+        </div>
+
+        <div class="h-[calc(40vh-40px)] w-full">
+            <canvas id="@chartId" class="w-full h-full p-2"></canvas>
+        </div>
     </div>
 </div>
 
@@ -28,7 +40,7 @@
 
         let datasets = data.map(function(series) {
             return {
-                label: series.metric + ' (' + series.aggregation + ')',
+                label: 'Errors',
                 data: series.series.map(function(point) {
                     return {
                         x: new Date(point.time),
@@ -51,6 +63,9 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
+                    legend: {
+                            display: false
+                    },
                     crosshair: {
                         line: {
                             color: '#666',
