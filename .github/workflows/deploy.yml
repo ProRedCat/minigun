@@ -38,7 +38,7 @@ jobs:
           echo -e "Host *\n\tStrictHostKeyChecking no" > ~/.ssh/config
 
           ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
-            sudo pkill -f "minigun" || true
+            sudo pkill Minigun
           EOF
 
           sleep 2
