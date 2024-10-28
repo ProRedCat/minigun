@@ -24,10 +24,6 @@ jobs:
       - name: Publish .NET Core app
         run: dotnet publish src/Minigun/Minigun.csproj -c Release -r linux-x64 --self-contained -o ./publish
 
-      - name: Add EC2 Host Key to known_hosts
-        run: |
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
       - name: Upload files to EC2
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
@@ -38,8 +34,18 @@ jobs:
           echo "$EC2_SSH_KEY" > ./ec2_key.pem
           chmod 600 ./ec2_key.pem
 
-          # Upload the files to EC2
-          scp -i ./ec2_key.pem -r ./publish/* $EC2_USER@$EC2_HOST:$DEPLOY_DIR
+          # Add SSH config to disable strict host key checking
+          mkdir -p ~/.ssh
+          echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" > ~/.ssh/config
+
+          # Test SSH connection first
+          ssh -i ./ec2_key.pem -v $EC2_USER@$EC2_HOST "echo 'SSH connection successful'"
+
+          # Create directory if it doesn't exist
+          ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST "sudo mkdir -p $DEPLOY_DIR && sudo chown -R $EC2_USER:$EC2_USER $DEPLOY_DIR"
+
+          # Upload the files to EC2 with verbose output
+          scp -i ./ec2_key.pem -r -v ./publish/* $EC2_USER@$EC2_HOST:$DEPLOY_DIR
 
       - name: Restart Application on EC2
         env:
