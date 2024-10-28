@@ -19,6 +19,7 @@ html {
 
 .loading-container .loading-indicator {
   display: none;
+  visibility: visible;
 }
 
 .loading-container.htmx-request .loading-indicator {
