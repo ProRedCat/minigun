@@ -61,8 +61,19 @@ jobs:
           DEPLOY_DIR: /var/www/minigun
         run: |
           ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+            set -x  # Print commands as they execute
+            echo "Current directory: $(pwd)"
             cd $DEPLOY_DIR
-            sudo nohup ./Minigun > /dev/null 2>&1 &
+            echo "Changed to directory: $(pwd)"
+            ls -la  # Check files and permissions
+            # Check if Minigun exists and is executable
+            test -x ./Minigun && echo "Minigun is executable" || echo "Minigun is not executable"
+            sudo nohup ./Minigun > minigun.log 2>&1 &
+            # Check if process started
+            sleep 2
+            ps aux | grep Minigun
+            # Check the log file
+            tail -n 20 minigun.log
           EOF
 
       - name: Clean up
