@@ -54,7 +54,7 @@ jobs:
 
             # Navigate to the deployment directory and start the app
             cd $DEPLOY_DIR
-            nohup ./minigun > /dev/null 2>&1 &
+            nohup ./Minigun > /dev/null 2>&1 &
           EOF
 
       - name: Clean up
