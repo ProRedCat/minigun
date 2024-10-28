@@ -18,8 +18,14 @@ jobs:
         with:
           dotnet-version: "9.0.100-rc.2.24474.11"
 
+      - name: Install bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo 'export BUN_INSTALL="$HOME/.bun"' >> $GITHUB_ENV
+          echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $GITHUB_ENV
+
       - name: Publish .NET Core app
-        run: dotnet publish -c Release -r linux-x64 --self-contained -o ./publish
+        run: dotnet publish src/Minigun/Minigun.csproj -c Release -r linux-x64 --self-contained -o ./publish
 
       - name: Upload files to EC2
         env:
