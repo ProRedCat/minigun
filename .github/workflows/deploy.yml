@@ -62,7 +62,7 @@ jobs:
         run: |
           ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
             cd $DEPLOY_DIR
-            nohup sudo ./Minigun > /dev/null 2>&1 &
+            sudo nohup ./Minigun > /dev/null 2>&1 &
           EOF
 
       - name: Clean up
