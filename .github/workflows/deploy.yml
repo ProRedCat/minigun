@@ -53,13 +53,17 @@ jobs:
 
             mkdir -p $DEPLOY_DIR/certs
 
-            # Copy the actual certificates (not the symlinks)
-            sudo cp $(readlink -f /etc/letsencrypt/live/minigun.proredcat.xyz/fullchain.pem) $DEPLOY_DIR/certs/fullchain.pem
-            sudo cp $(readlink -f /etc/letsencrypt/live/minigun.proredcat.xyz/privkey.pem) $DEPLOY_DIR/certs/privkey.pem
-            
-            # Set proper ownership and restrictive permissions
-            sudo chown $EC2_USER:$EC2_USER $DEPLOY_DIR/certs/fullchain.pem $DEPLOY_DIR/certs/privkey.pem
-            sudo chmod 600 $DEPLOY_DIR/certs/*.pem
+            # Create the directory with proper permissions
+            sudo mkdir -p /var/www/minigun/certs
+            sudo chown $EC2_USER:$EC2_USER /var/www/minigun/certs
+
+            # Copy certificates to the correct location
+            sudo cp $(readlink -f /etc/letsencrypt/live/minigun.proredcat.xyz/fullchain.pem) /var/www/minigun/certs/fullchain.pem
+            sudo cp $(readlink -f /etc/letsencrypt/live/minigun.proredcat.xyz/privkey.pem) /var/www/minigun/certs/privkey.pem
+
+            # Set proper permissions
+            sudo chown $EC2_USER:$EC2_USER /var/www/minigun/certs/*.pem
+            sudo chmod 600 /var/www/minigun/certs/*.pem
 
             cd $DEPLOY_DIR
             nohup ./Minigun > /dev/null 2>&1 &
