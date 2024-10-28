@@ -49,13 +49,22 @@ jobs:
           DEPLOY_DIR: /var/www/minigun
         run: |
           ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
-            # Stop any existing instance
-            pkill -f "minigun" || true
+          
+          pkill -f "minigun" || true
 
-            # Navigate to the deployment directory and start the app
-            cd $DEPLOY_DIR
-            nohup ./Minigun > /dev/null 2>&1 &
-          EOF
+          mkdir -p $DEPLOY_DIR/certs
+
+          # Copy the actual certificates (not the symlinks)
+          sudo cp $(readlink -f /etc/letsencrypt/live/minigun.proredcat.xyz/fullchain.pem) $DEPLOY_DIR/certs/fullchain.pem
+          sudo cp $(readlink -f /etc/letsencrypt/live/minigun.proredcat.xyz/privkey.pem) $DEPLOY_DIR/certs/privkey.pem
+          
+          # Set proper ownership and restrictive permissions
+          sudo chown $EC2_USER:$EC2_USER $DEPLOY_DIR/certs/fullchain.pem $DEPLOY_DIR/certs/privkey.pem
+          sudo chmod 600 $DEPLOY_DIR/certs/*.pem
+
+          cd $DEPLOY_DIR
+          nohup ./Minigun > /dev/null 2>&1 &
+        EOF
 
       - name: Clean up
         run: rm -f ./ec2_key.pem
