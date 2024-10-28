@@ -16,7 +16,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "9.0.0"
+          dotnet-version: "9.0.100-rc.2"
 
       - name: Publish .NET Core app
         run: dotnet publish -c Release -r linux-x64 --self-contained -o ./publish
