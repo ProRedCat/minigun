@@ -51,19 +51,8 @@ jobs:
           ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
             pkill -f "minigun" || true
 
-            sudo mkdir -p /var/www/minigun/certs
-
-            # Copy the certificates
-            sudo cp -v /etc/letsencrypt/archive/minigun.proredcat.xyz/fullchain1.pem /var/www/minigun/certs/fullchain.pem
-            sudo cp -v /etc/letsencrypt/archive/minigun.proredcat.xyz/privkey1.pem /var/www/minigun/certs/privkey.pem
-
-            # Set proper ownership and permissions
-            sudo chown $EC2_USER:$EC2_USER /var/www/minigun/certs/
-            sudo chown $EC2_USER:$EC2_USER /var/www/minigun/certs/*.pem
-            sudo chmod 600 /var/www/minigun/certs/*.pem
-
             cd $DEPLOY_DIR
-            nohup ./Minigun > /dev/null 2>&1 &
+            nohup sudo ./Minigun > /dev/null 2>&1 &
           EOF
 
       - name: Clean up
