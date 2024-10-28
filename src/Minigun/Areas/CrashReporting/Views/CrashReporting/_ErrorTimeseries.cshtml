@@ -10,18 +10,18 @@
             Errors by hour
         </div>
 
-        <div class="flex items-center justify-center h-[calc(40vh-40px)]">
+        <div class="flex items-center justify-center h-[calc(40vh-40px)] p-2">
             @await Html.PartialAsync("/Areas/Shared/_LoadingSpinner.cshtml")
         </div>
     </div>
 
-    <div class="w-full h-[40vh] border border-secondary-blue-grey m-4">
+    <div class="h-[40vh] border border-secondary-blue-grey m-4">
         <div class="w-full p-2 font-medium bg-gray-100">
             Errors by hour
         </div>
 
-        <div class="h-[calc(40vh-40px)] w-full">
-            <canvas id="@chartId" class="w-full h-full p-2"></canvas>
+        <div class="h-[calc(40vh-40px)] w-full p-2">
+            <canvas id="@chartId" class="h-full w-full"></canvas>
         </div>
     </div>
 </div>
