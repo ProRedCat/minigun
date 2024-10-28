@@ -61,12 +61,12 @@ jobs:
           DEPLOY_DIR: /var/www/minigun
         run: |
           ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << EOF
-            set -x  # Print commands as they execute
-            sudo nohup .$DEPLOY_DIR/Minigun > minigun.log 2>&1 &
-            # Check if process started
-            sleep 2
+            set -x
+
+            cd $DEPLOY_DIR
+            sudo nohup ./Minigun > minigun.log 2>&1 &
+
             ps aux | grep Minigun
-            # Check the log file
             tail -n 20 minigun.log
           EOF
 
