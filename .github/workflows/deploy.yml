@@ -37,10 +37,10 @@ jobs:
           mkdir -p ~/.ssh
           echo -e "Host *\n\tStrictHostKeyChecking no" > ~/.ssh/config
 
-          # Stop the application
-          ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST 'pkill -f "minigun" || true'
+          ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+            pkill -f "minigun" || true
+          EOF
 
-          # Wait a moment to ensure process is fully stopped
           sleep 2
 
       - name: Upload files to EC2
