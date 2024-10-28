@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "9.0.100-rc.2.24474.11"
 
@@ -22,7 +22,7 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Publish .NET Core app
-        run: dotnet publish src/Minigun/Minigun.csproj -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./publish
+        run: dotnet publish Minigun.sln -c Release -o ./publish -p:PublishEnvironment=CI
 
       - name: Upload files to EC2
         env:
