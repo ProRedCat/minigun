@@ -23,7 +23,7 @@ jobs:
 
       - name: Template appsettings.json
         run: |
-          sed -i 's|#{RAYGUN_API_KEY}|'"$RAYGUN_API_KEY"'|g' /src/Minigun/appsettings.json
+          sed -i 's|#{RAYGUN_API_KEY}|'"$RAYGUN_API_KEY"'|g' src/Minigun/appsettings.json
         env:
           RAYGUN_API_KEY: ${{ secrets.RAYGUN_API_KEY }}
 
