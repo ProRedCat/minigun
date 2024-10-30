@@ -21,6 +21,10 @@ jobs:
       - name: Install bun
         uses: oven-sh/setup-bun@v2
 
+      - name: Template secrets
+        run: |
+          sed -i 's/${RAYGUN_API_KEY}/${{ secrets.RAYGUN_API_KEY }}/g' appsettings.json
+
       - name: Publish .NET Core app
         run: dotnet publish Minigun.sln -c Release -o ./publish -p:PublishEnvironment=CI
 
