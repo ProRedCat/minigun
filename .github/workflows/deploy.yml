@@ -12,6 +12,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
@@ -64,7 +68,7 @@ jobs:
         with:
           personal-access-token: ${{ secrets.RAYGUN_PAT }}
           api-key: ${{ secrets.RAYGUN_API_KEY }}
-          version: ${{ substr(github.sha, 0, 7) }}
+          version: ${{ steps.vars.outputs.sha_short }}
           comment: ${{ github.event.head_commit.message }}
 
       - name: Start Application on EC2
