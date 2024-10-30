@@ -64,9 +64,8 @@ jobs:
         with:
           personal-access-token: ${{ secrets.RAYGUN_PAT }}
           api-key: ${{ secrets.RAYGUN_API_KEY }}
-          version: ${{ github.sha }}
+          version: ${{ substr(github.sha, 0, 7) }}
           comment: ${{ github.event.head_commit.message }}
-      - run: echo "🎉 Deployment [${{ steps.create_deployment.outputs.deploymentId }}] was created successfully."
 
       - name: Start Application on EC2
         env:
