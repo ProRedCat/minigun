@@ -15,6 +15,6 @@ public class SettingsController : Controller
     [HttpGet("/settings")]
     public IActionResult Index()
     {
-        return View();
+        return PartialView();
     }
 }

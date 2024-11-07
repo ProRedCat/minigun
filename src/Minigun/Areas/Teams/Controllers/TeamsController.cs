@@ -15,6 +15,6 @@ public class TeamsController : Controller
     [HttpGet("/teams")]
     public IActionResult Index()
     {
-        return View();
+        return PartialView();
     }
 }

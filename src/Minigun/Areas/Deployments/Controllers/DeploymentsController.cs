@@ -15,6 +15,6 @@ public class DeploymentsController : Controller
     [HttpGet("/deployments")]
     public IActionResult Index()
     {
-        return View();
+        return PartialView();
     }
 }

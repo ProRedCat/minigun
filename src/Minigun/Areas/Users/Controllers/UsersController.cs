@@ -15,6 +15,6 @@ public class UsersController : Controller
     [HttpGet("/users")]
     public IActionResult Index()
     {
-        return View();
+        return PartialView();
     }
 }
