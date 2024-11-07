@@ -15,7 +15,6 @@
     <ItemGroup>
       <Folder Include="Areas\Deployments\Models\" />
       <Folder Include="Areas\Home\Models\" />
-      <Folder Include="Areas\Rum\Models\" />
       <Folder Include="Areas\Settings\Models\" />
       <Folder Include="Areas\Teams\Models\" />
       <Folder Include="Areas\Users\Models\" />

@@ -11,13 +11,21 @@
     <!-- Navigation Links -->
     <ul class="space-y-4 flex-grow">
         <li>
-            <a href="@Url.Action("Index", "CrashReporting", new { Area = "CrashReporting" })" class="flex items-center space-x-4 text-secondary-blue-grey nav-link group">
+            <a href="@Url.Action("Index", "CrashReporting", new { Area = "CrashReporting" })"
+               hx-get="@Url.Action("Index", "CrashReporting", new { Area = "CrashReporting" })"
+               hx-target="#minigun-content"
+               hx-include="#selected-application"
+               class="flex items-center space-x-4 text-secondary-blue-grey nav-link group">
                 <img src="/images/svg/cr-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Crash Reporting</span>
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Index", "Rum", new { Area = "Rum" })" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
+            <a href="@Url.Action("Index", "Rum", new { Area = "Rum" })"
+               hx-get="@Url.Action("Index", "Rum", new { Area = "Rum" })"
+               hx-target="#minigun-content"
+               hx-include="#selected-application"
+               class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
                 <img src="/images/svg/rum-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Real User Monitoring</span>
             </a>

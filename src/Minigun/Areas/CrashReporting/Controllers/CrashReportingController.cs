@@ -18,18 +18,30 @@ public class CrashReportingController : Controller
     }
 
     [HttpGet("/crashreporting")]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index([FromQuery] string? applicationIdentifier)
     {
-        var applications = await _raygunApiService.ListApplicationsAsync(100);
-
-        if (applications.Count == 0)
+        if (applicationIdentifier == null)
         {
-            return NotFound("No applications found.");
+            var applications = await _raygunApiService.ListApplicationsAsync(100);
+
+            if (applications.Count == 0)
+            {
+                return NotFound("No applications found.");
+            }
+
+            var firstApplication = applications.First();
+
+            return RedirectToAction("FullCrashPage", new { applicationIdentifier = firstApplication.Identifier });
         }
-
-        var firstApplication = applications.First();
-
-        return RedirectToAction("FullCrashPage", new { applicationIdentifier = firstApplication.Identifier });
+        
+        Response.Headers.Append("HX-Push", $"/crashreporting/{applicationIdentifier}/");
+        
+        var viewModel = new CrashReportingViewModel(
+            new List<ErrorGroup>(),
+            new List<TimeseriesData>()
+        );
+        
+        return PartialView("Index", viewModel);
     }
 
     [HttpGet("/crashreporting/{applicationIdentifier}")]

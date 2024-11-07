@@ -109,4 +109,33 @@ public class RaygunApiService : IRaygunApiService
         var responseContent = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<List<TimeseriesData>>(responseContent, JsonOptions) ?? [];
     }
+    
+    public async Task<List<HistogramData>> GetRumHistogramAsync(
+        string applicationId,
+        DateTime start,
+        DateTime end,
+        string[] metrics,
+        string? filter = null)
+    {
+        SetAuthorizationHeader();
+
+        var requestBody = new
+        {
+            start = start.ToUniversalTime(),
+            end = end.ToUniversalTime(),
+            metrics = metrics,
+            filter = filter
+        };
+
+        var content = new StringContent(
+            JsonSerializer.Serialize(requestBody, JsonOptions),
+            Encoding.UTF8,
+            "application/json");
+
+        var response = await _httpClient.PostAsync($"metrics/{applicationId}/pages/histogram", content);
+        response.EnsureSuccessStatusCode();
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<List<HistogramData>>(responseContent, JsonOptions) ?? [];
+    }
 }

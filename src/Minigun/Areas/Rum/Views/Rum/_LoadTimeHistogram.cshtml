@@ -1,0 +1,122 @@
+﻿@model IEnumerable<HistogramData>
+
+@{
+var chartId = $"histogramChart_{Guid.NewGuid()}";
+}
+
+<div id="rum-loadtime-content" class="loading-container">
+    <div class="loading-indicator h-[40vh] border border-secondary-blue-grey m-4">
+        <div class="w-full p-2 font-medium bg-gray-100">
+            Load Time Histogram
+        </div>
+
+        <div class="flex items-center justify-center h-[calc(40vh-40px)] p-2">
+            @await Html.PartialAsync("/Areas/Shared/_LoadingSpinner.cshtml")
+        </div>
+    </div>
+
+    <div class="h-[40vh] border border-secondary-blue-grey m-4">
+        <div class="w-full p-2 font-medium bg-gray-100">
+            Load Time Histogram
+        </div>
+
+        <div class="h-[calc(40vh-40px)] w-full p-2">
+            <canvas id="@chartId" class="h-full w-full"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (!window.chartInstances) {
+        window.chartInstances = {};
+    }
+
+    function initializeHistogram(chartId, data) {
+        let ctx = document.getElementById(chartId).getContext('2d');
+
+        if (window.chartInstances[chartId]) {
+            window.chartInstances[chartId].destroy();
+        }
+
+        let datasets = data.map(function(histogram) {
+            return {
+                label: histogram.metric || 'Count',
+                data: histogram.buckets.map(bucket => bucket.count),
+                backgroundColor: '#2C9AF0',
+                borderWidth: 1,
+                barPercentage: 1.0,
+                categoryPercentage: 1.0
+            };
+        });
+
+        let labels = data[0].buckets.map(bucket => bucket.range);
+
+        window.chartInstances[chartId] = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                animation: { duration: 0.05 },
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                return `Range: ${tooltipItems[0].label}`;
+                            },
+                            label: function(context) {
+                                return `Count: ${context.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Load Time (ms)'
+                        },
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            autoSkip: true,
+                            maxRotation: 45,
+                            maxTicksLimit: 20
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: false,
+                        },
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function loadHistogram() {
+        let chartId = '@chartId';
+        let chartData = @Html.Raw(Json.Serialize(Model));
+
+        if (document.getElementById(chartId)) {
+            initializeHistogram(chartId, chartData);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadHistogram);
+
+    document.addEventListener('htmx:afterSwap', function(evt) {
+        loadHistogram();
+    });
+</script>

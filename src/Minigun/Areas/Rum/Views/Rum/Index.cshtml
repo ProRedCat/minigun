@@ -1,7 +1,17 @@
-﻿@{
+﻿@model Minigun.Areas.Rum.Models.RumViewModel
+
+@{
     ViewData["Title"] = "Real User Monitoring";
 }
 
-<div id="rum-content">
-    @DateTime.Now
+<div id="rum-content" class="space-y-4">
+    <div id="error-loadtime-wrapper"
+         hx-get="@Url.Action("LoadTimeHistogramPartial", "Rum")"
+         hx-include="#selected-application, #startTime, #endTime"
+         hx-target="#rum-loadtime-content"
+         hx-indicator="#rum-loadtime-content"
+         hx-swap="outerHTML"
+         hx-trigger="load once, applicationSelected from:document, dateRangeSelected from:document">
+        @await Html.PartialAsync("_LoadTimeHistogram", Model.LoadTimeHistogram)
+    </div>
 </div>
