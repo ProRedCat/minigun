@@ -55,28 +55,29 @@ public class CrashReportingController : Controller
         return View("Index", viewModel);
     }
 
-    [HttpGet("/crashreporting/{applicationIdentifier}/error-groups")]
-    public async Task<IActionResult> ErrorGroupsPartial(string applicationIdentifier)
+    [HttpGet("/crashreporting/error-groups")]
+    public async Task<IActionResult> ErrorGroupsPartial([FromQuery] string applicationIdentifier)
     {
         var endTime = DateTime.Now;
         var startTime = endTime.AddDays(-7);
 
-        var errorGroupsTask =
-            _raygunApiService.ListErrorGroupsAsync(applicationIdentifier, orderby: ["lastOccurredAt desc"]);
-        var timeseriesTask = _raygunApiService.GetErrorTimeseriesAsync(applicationIdentifier, startTime, endTime);
-        
-        var errorGroups = await errorGroupsTask;
-        var timeseries = await timeseriesTask;
+        var errorGroups = await _raygunApiService.ListErrorGroupsAsync(applicationIdentifier, orderby: ["lastOccurredAt desc"]);
         
         var filteredGroups = errorGroups
             .Where(e => e.LastOccurredAt > startTime)
             .ToList();
 
-        var viewModel = new CrashReportingViewModel(
-            filteredGroups,
-            timeseries
-        );
+        return PartialView("_ErrorGroups", filteredGroups);
+    }
+    
+    [HttpGet("/crashreporting/error-timeseries")]
+    public async Task<IActionResult> ErrorTimeseriesPartial([FromQuery] string applicationIdentifier)
+    {
+        var endTime = DateTime.Now;
+        var startTime = endTime.AddDays(-7);
+        
+        var errorTimeseries = await _raygunApiService.GetErrorTimeseriesAsync(applicationIdentifier, startTime, endTime);
 
-        return PartialView("_ErrorSummary", viewModel);
+        return PartialView("_ErrorTimeseries", errorTimeseries);
     }
 }

@@ -2,7 +2,14 @@
 
 <div class="w-full p-2 border-secondary-blue-grey border-b bg-white">
     <div class="relative ml-4 inline-block text-left w-96">
+        <!-- Hidden input to store selected application -->
+        <input type="hidden"
+               id="selected-application"
+               name="applicationIdentifier"
+               value="@Model.Applications.First().Identifier"/>
+
         <!-- Dropdown button with first item pre-selected -->
+        <!-- TODO: Change this so that we show the correct one on load -->
         <button class="flex justify-between items-center w-full py-2 font-medium text-sm focus:outline-none"
                 onclick="toggleDropdown()">
             <div class="flex space-x-2 items-center">
@@ -14,23 +21,20 @@
             <img src="/images/svg/dropdown-icon.svg" alt="Dropdown Icon" class="ml-4"/>
         </button>
 
-        <!-- Dropdown menu -->
         <div id="dropdown-menu" class="absolute w-full overflow-y-auto max-h-96 bg-white border border-gray-200 rounded-t-none rounded-md shadow-lg hidden">
-            <!-- Search input -->
             <div class="p-2">
-                <input type="text" id="dropdown-search" placeholder="Search..." class="w-full border border-gray-300 rounded-md p-2">
+                <input type="text"
+                       id="dropdown-search"
+                       placeholder="Search..."
+                       class="w-full border border-gray-300 rounded-md p-2">
             </div>
-            <!-- Application items -->
+
             @foreach (var application in Model.Applications)
             {
                 <div class="dropdown-item px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
-                     hx-get="@Url.Action(Model.HtmxContext.Action, Model.HtmxContext.Controller, new { applicationIdentifier = application.Identifier })"
-                     hx-target="#@Model.HtmxContext.RoutePrefix-content"
-                     hx-swap="innerHTML"
-                     hx-trigger="click"
-                     hx-indicator="@Model.HtmxContext.LoadingIndicator"
-                     hx-push-url="/@Model.HtmxContext.RoutePrefix/@application.Identifier/"
-                     onclick="selectApplication('@application.Name')">
+                     data-application-id="@application.Identifier"
+                     data-application-name="@application.Name"
+                     hx-on:click="selectApplication(this)">
                     @application.Name
                 </div>
             }
@@ -43,37 +47,36 @@
         const dropdownMenu = document.getElementById('dropdown-menu');
         dropdownMenu.classList.toggle('hidden');
 
-        // Focus the search input when dropdown is opened
         if (!dropdownMenu.classList.contains('hidden')) {
             document.getElementById('dropdown-search').focus();
         }
     }
 
-    function selectApplication(applicationName) {
-        const dropdownText = document.getElementById('dropdown-text');
-        dropdownText.innerHTML = applicationName;
+    function selectApplication(element) {
+        const applicationId = element.dataset.applicationId;
+        const applicationName = element.dataset.applicationName;
 
-        // Close dropdown after selection
-        const dropdownMenu = document.getElementById('dropdown-menu');
-        dropdownMenu.classList.add('hidden');
+        document.getElementById('selected-application').value = applicationId;
+        document.getElementById('dropdown-text').textContent = applicationName;
+
+        document.getElementById('dropdown-menu').classList.add('hidden');
+
+        // Dispatch application selected event
+        const event = new CustomEvent('applicationSelected', {
+            detail: { applicationId, applicationName }
+        });
+        document.dispatchEvent(event);
     }
 
     function filterApplications() {
         const filter = document.getElementById('dropdown-search').value.toLowerCase();
-        const items = document.querySelectorAll('#dropdown-menu .dropdown-item');
-
-        items.forEach(function(item) {
-            const text = item.textContent.toLowerCase();
-            if (text.includes(filter)) {
-                item.style.display = '';
-            } else {
-                item.style.display = 'none';
-            }
-        });
+        document.querySelectorAll('#dropdown-menu .dropdown-item')
+            .forEach(item => {
+                item.style.display = item.textContent.toLowerCase().includes(filter)
+                    ? ''
+                    : 'none';
+            });
     }
 
-    // Add event listener for the search input
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('dropdown-search').addEventListener('keyup', filterApplications);
-    });
+    document.getElementById('dropdown-search')?.addEventListener('keyup', filterApplications);
 </script>

@@ -6,5 +6,7 @@
 
 
 <div id="crashreporting-content" class="space-y-4">
-    @await Html.PartialAsync("_ErrorSummary", Model)
+    @await Html.PartialAsync("_ErrorTimeseries", Model.ErrorsTimeseries)
+
+    @await Html.PartialAsync("_ErrorGroups", Model.ErrorGroups)
 </div>
