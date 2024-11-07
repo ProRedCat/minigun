@@ -8,21 +8,21 @@
 <div id="crashreporting-content" class="space-y-4">
     <div id="error-timeseries-wrapper"
          hx-get="@Url.Action("ErrorTimeseriesPartial", "CrashReporting")"
-         hx-include="#selected-application"
+         hx-include="#selected-application, #startTime, #endTime"
          hx-target="#error-timeseries-content"
          hx-indicator="#error-timeseries-content"
          hx-swap="outerHTML"
-         hx-trigger="load once, applicationSelected from:document">
+         hx-trigger="load once, applicationSelected from:document, dateRangeSelected from:document">
         @await Html.PartialAsync("_ErrorTimeseries", Model.ErrorsTimeseries)
     </div>
 
     <div id="error-groups-wrapper"
          hx-get="@Url.Action("ErrorGroupsPartial", "CrashReporting")"
-         hx-include="#selected-application"
+         hx-include="#selected-application, #startTime, #endTime"
          hx-target="#error-groups-content"
          hx-indicator="#error-groups-content"
          hx-swap="outerHTML"
-         hx-trigger="load once, applicationSelected from:document">
+         hx-trigger="load once, applicationSelected from:document, dateRangeSelected from:document">
         @await Html.PartialAsync("_ErrorGroups", Model.ErrorGroups)
     </div>
 </div>

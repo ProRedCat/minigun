@@ -20,8 +20,9 @@
         @await Html.PartialAsync("/Areas/Shared/_SideNav.cshtml")
     </aside>
     <main role="main" class="w-full flex flex-col">
-        <div id="application-dropdown" class="sticky top-0 z-10 bg-white">
+        <div id="application-dropdown" class="sticky top-0 z-10 flex justify-between bg-white w-full p-2 border-secondary-blue-grey border-b ">
             @await Component.InvokeAsync("ApplicationDropdown")
+            @await Component.InvokeAsync("DateSelector")
         </div>
         <div class="flex-1 overflow-y-auto">
             @RenderBody()

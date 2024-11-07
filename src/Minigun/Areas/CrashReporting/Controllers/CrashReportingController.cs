@@ -44,11 +44,12 @@ public class CrashReportingController : Controller
     }
 
     [HttpGet("/crashreporting/error-groups")]
-    public async Task<IActionResult> ErrorGroupsPartial([FromQuery] string applicationIdentifier)
+    public async Task<IActionResult> ErrorGroupsPartial(
+        [FromQuery] string applicationIdentifier,
+        [FromQuery] DateTime startTime,
+        [FromQuery] DateTime endTime
+        )
     {
-        var endTime = DateTime.Now;
-        var startTime = endTime.AddDays(-7);
-
         var errorGroups = await _raygunApiService.ListErrorGroupsAsync(applicationIdentifier, orderby: ["lastOccurredAt desc"]);
         
         var filteredGroups = errorGroups
@@ -61,11 +62,12 @@ public class CrashReportingController : Controller
     }
     
     [HttpGet("/crashreporting/error-timeseries")]
-    public async Task<IActionResult> ErrorTimeseriesPartial([FromQuery] string applicationIdentifier)
+    public async Task<IActionResult> ErrorTimeseriesPartial(
+        [FromQuery] string applicationIdentifier,
+        [FromQuery] DateTime startTime,
+        [FromQuery] DateTime endTime
+        )
     {
-        var endTime = DateTime.Now;
-        var startTime = endTime.AddDays(-7);
-        
         var errorTimeseries = await _raygunApiService.GetErrorTimeseriesAsync(applicationIdentifier, startTime, endTime);
         
         Response.Headers.Append("HX-Push", $"/crashreporting/{applicationIdentifier}/");
