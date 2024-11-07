@@ -6,22 +6,21 @@
         <input type="hidden"
                id="selected-application"
                name="applicationIdentifier"
-               value="@Model.Applications.First().Identifier"/>
+               value="@Model.SelectedApplicationId"/>
 
-        <!-- Dropdown button with first item pre-selected -->
-        <!-- TODO: Change this so that we show the correct one on load -->
         <button class="flex justify-between items-center w-full py-2 font-medium text-sm focus:outline-none"
                 onclick="toggleDropdown()">
             <div class="flex space-x-2 items-center">
                 <img src="/images/svg/app-icon.svg" alt="Application Icon"/>
                 <p id="dropdown-text" class="ml-2">
-                    @Model.Applications.First().Name
+                    @(Model.Applications.FirstOrDefault()?.Name ?? "Select Application")
                 </p>
             </div>
             <img src="/images/svg/dropdown-icon.svg" alt="Dropdown Icon" class="ml-4"/>
         </button>
 
-        <div id="dropdown-menu" class="absolute w-full overflow-y-auto max-h-96 bg-white border border-gray-200 rounded-t-none rounded-md shadow-lg hidden">
+        <div id="dropdown-menu"
+             class="absolute w-full overflow-y-auto max-h-96 bg-white border border-gray-200 rounded-t-none rounded-md shadow-lg hidden">
             <div class="p-2">
                 <input type="text"
                        id="dropdown-search"
@@ -31,7 +30,7 @@
 
             @foreach (var application in Model.Applications)
             {
-                <div class="dropdown-item px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
+                <div class="dropdown-item px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 @(application.Identifier == Model.SelectedApplicationId ? "bg-gray-100" : "")"
                      data-application-id="@application.Identifier"
                      data-application-name="@application.Name"
                      hx-on:click="selectApplication(this)">

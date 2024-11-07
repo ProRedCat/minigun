@@ -15,40 +15,27 @@ public class ApplicationDropdownViewComponent : ViewComponent
 
     public async Task<IViewComponentResult> InvokeAsync()
     {
-        var route = Request.Path.ToString().Split("/")[1];
-        var applications = await _raygunApiService.ListApplicationsAsync(100) ?? [];
+        var pathParts = Request.Path.ToString().Split("/", StringSplitOptions.RemoveEmptyEntries);
+        var selectedId = pathParts.Length > 1 ? pathParts[1] : null;
+
+        var applications = await _raygunApiService.ListApplicationsAsync(100);
+        
+        // Find selected application and move it to first position if found
+        var selectedApp = applications.FirstOrDefault(a => a.Identifier == selectedId);
+        if (selectedApp != null && applications.Count > 0)
+        {
+            applications = applications
+                .Where(a => a.Identifier != selectedId)
+                .Prepend(selectedApp)
+                .ToList();
+        }
 
         var model = new ApplicationsPartialModel
         {
             Applications = applications,
-            HtmxContext = GetHtmxContext(route)
+            SelectedApplicationId = selectedId
         };
         
-        
-        //TODO: Selected application should be first in view
         return View("/Areas/Shared/_ApplicationsPartial.cshtml", model);
-    }
-
-    private static ApplicationsPartialHtmxModel GetHtmxContext(string route)
-    {
-        return route switch
-        {
-            "crashreporting" => new ApplicationsPartialHtmxModel
-            {
-                Controller = "CrashReporting",
-                Action = "ErrorGroupsPartial",
-                RoutePrefix = route,
-                LoadingIndicator = ".loading-container",
-            },
-            "rum" => new ApplicationsPartialHtmxModel
-            {
-                Controller = "Rum",
-                Action = "CoreWebVitalsPartial",
-                RoutePrefix = route,
-                LoadingIndicator = ".loading-container",
-
-            },
-            _ => throw new ArgumentException($"Unknown route: {route}")
-        };
     }
 }

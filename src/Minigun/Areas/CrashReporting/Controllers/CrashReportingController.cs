@@ -66,6 +66,8 @@ public class CrashReportingController : Controller
         var filteredGroups = errorGroups
             .Where(e => e.LastOccurredAt > startTime)
             .ToList();
+        
+        Response.Headers.Append("HX-Push", $"/crashreporting/{applicationIdentifier}/");
 
         return PartialView("_ErrorGroups", filteredGroups);
     }
@@ -77,6 +79,8 @@ public class CrashReportingController : Controller
         var startTime = endTime.AddDays(-7);
         
         var errorTimeseries = await _raygunApiService.GetErrorTimeseriesAsync(applicationIdentifier, startTime, endTime);
+        
+        Response.Headers.Append("HX-Push", $"/crashreporting/{applicationIdentifier}/");
 
         return PartialView("_ErrorTimeseries", errorTimeseries);
     }
