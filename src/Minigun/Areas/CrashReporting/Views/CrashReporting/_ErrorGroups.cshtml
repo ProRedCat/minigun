@@ -2,12 +2,7 @@
 
 @using Minigun.Utilities
 
-<div class="loading-container"
-     hx-get="@Url.Action("ErrorGroupsPartial", "CrashReporting")"
-     hx-include="#selected-application"
-     hx-swap="outerHTML"
-     hx-trigger="applicationSelected from:document"
-     >
+<div id="error-groups-content" class="loading-container">
     <div class="loading-indicator border border-secondary-blue-grey m-4 bg-white">
         <div class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200">
             <div class="px-4 py-3 bg-gray-100">

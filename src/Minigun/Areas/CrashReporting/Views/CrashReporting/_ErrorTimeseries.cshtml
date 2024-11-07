@@ -4,12 +4,7 @@
     var chartId = $"timeseriesChart_{Guid.NewGuid()}";
 }
 
-<div class="loading-container"
-     hx-get="@Url.Action("ErrorTimeseriesPartial", "CrashReporting")"
-     hx-include="#selected-application"
-     hx-swap="outerHTML"
-     hx-trigger="applicationSelected from:document"
-     >
+<div id="error-timeseries-content" class="loading-container">
     <div class="loading-indicator h-[40vh] border border-secondary-blue-grey m-4">
         <div class="w-full p-2 font-medium bg-gray-100">
             Errors by hour

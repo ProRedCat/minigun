@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Minigun.Areas.CrashReporting.Models;
+using Minigun.Models;
 using Minigun.Services;
 
 namespace Minigun.Areas.CrashReporting.Controllers;
@@ -32,24 +33,11 @@ public class CrashReportingController : Controller
     }
 
     [HttpGet("/crashreporting/{applicationIdentifier}")]
-    public async Task<IActionResult> FullCrashPage(string applicationIdentifier)
+    public IActionResult FullCrashPage(string applicationIdentifier)
     {
-        var endTime = DateTime.Now;
-        var startTime = endTime.AddDays(-7);
-
-        var errorGroupsTask = _raygunApiService.ListErrorGroupsAsync(applicationIdentifier, orderby: ["lastOccurredAt desc"]);
-        var timeseriesTask = _raygunApiService.GetErrorTimeseriesAsync(applicationIdentifier, startTime, endTime);
-
-        var errorGroups = await errorGroupsTask;
-        var timeseries = await timeseriesTask;
-        
-        var filteredGroups = errorGroups
-            .Where(e => e.LastOccurredAt > startTime)
-            .ToList();
-
         var viewModel = new CrashReportingViewModel(
-            filteredGroups,
-            timeseries
+            new List<ErrorGroup>(),
+            new List<TimeseriesData>()
         );
 
         return View("Index", viewModel);
