@@ -31,6 +31,25 @@ var chartId = $"histogramChart_{Guid.NewGuid()}";
         window.chartInstances = {};
     }
 
+    function getColorForRange(range) {
+        const parts = range.split(' - ');
+        const min = parseInt(parts[0]);
+
+        if (min < 600) {
+            return '#4CAF50'; // Green
+        } else if (min < 1000) {
+            return '#8BC34A'; // Light Green
+        } else if (min < 2000) {
+            return '#d4e157'; // Yellow Green
+        } else if (min < 3000) {
+            return '#FFD54F'; // Yellow
+        } else if (min < 4000) {
+            return '#FFA726'; // Orange
+        } else {
+            return '#F44336'; // Red
+        }
+    }
+
     function initializeHistogram(chartId, data) {
         let ctx = document.getElementById(chartId).getContext('2d');
 
@@ -42,7 +61,7 @@ var chartId = $"histogramChart_{Guid.NewGuid()}";
             return {
                 label: histogram.metric || 'Count',
                 data: histogram.buckets.map(bucket => bucket.count),
-                backgroundColor: '#2C9AF0',
+                backgroundColor: histogram.buckets.map(bucket => getColorForRange(bucket.range)),
                 borderWidth: 1,
                 barPercentage: 1.0,
                 categoryPercentage: 1.0
