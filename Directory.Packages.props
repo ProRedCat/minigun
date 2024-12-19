@@ -3,9 +3,8 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageVersionOverrideEnabled>false</CentralPackageVersionOverrideEnabled>
   </PropertyGroup>
-  
   <ItemGroup>
-    <PackageVersion Include="Mindscape.Raygun4Net.AspNetCore" Version="11.1.1" />
-    <PackageVersion Include="Mindscape.Raygun4Net.NetCore.Common" Version="11.1.1"/>  
+    <PackageVersion Include="Mindscape.Raygun4Net.AspNetCore" Version="11.2.1" />
+    <PackageVersion Include="Mindscape.Raygun4Net.NetCore.Common" Version="11.2.1" />
   </ItemGroup>
 </Project>
