@@ -1,16 +1,100 @@
 ﻿@model IEnumerable<Minigun.Models.ErrorGroup>
 
-@if (Model.Any())
-{
-    @foreach (var errorGroup in Model)
-    {
-        <div class="flex space-x-4">
-            <p>@errorGroup.Message</p>
-            <p>@errorGroup.LastOccurredAt</p>
+@using Minigun.Utilities
+
+<div id="error-groups-content" class="loading-container">
+    <div class="loading-indicator border border-secondary-blue-grey m-4 bg-white">
+        <div class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200">
+            <div class="px-4 py-3 bg-gray-100">
+                Active <span class="ml-2 bg-red-500 text-white rounded-full px-2 py-1">-</span>
+            </div>
+            <div class="px-4 py-3">
+                Resolved <span class="ml-2 bg-green-500 text-white rounded-full px-2 py-1">-</span>
+            </div>
+            <div class="px-4 py-3">
+                Ignored <span class="ml-2 bg-blue-500 text-white rounded-full px-2 py-1">-</span>
+            </div>
+            <div class="px-4 py-3">
+                Permanently ignored <span class="ml-2 bg-yellow-500 text-white rounded-full px-2 py-1">-</span>
+            </div>
         </div>
-    }
-}
-else
-{
-    <div>No errors!!</div>
-}
+
+        <table class="w-full text-sm text-left text-gray-500 table-fixed">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+                <th scope="col" class="p-4 w-12">
+                    <div class="flex items-center">
+                        <input id="checkbox-all" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                        <label for="checkbox-all" class="sr-only">checkbox</label>
+                    </div>
+                </th>
+                <th scope="col" class="px-4 py-2 w-2/3">Message</th>
+                <th scope="col" class="px-4 py-2 w-1/6">Last seen</th>
+                <th scope="col" class="px-4 py-2 w-1/6">Status</th>
+            </tr>
+            </thead>
+        </table>
+
+        <div class="flex items-center justify-center h-56">
+            @await Html.PartialAsync("/Areas/Shared/_LoadingSpinner.cshtml")
+        </div>
+    </div>
+
+    <div class="m-4 bg-white border border-secondary-blue-grey">
+        <div class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200">
+            <div class="px-4 py-3 bg-gray-100">
+                Active <span class="ml-2 bg-red-500 text-white rounded-full px-2 py-1">@Model.Count(e => e.Status == "active")</span>
+            </div>
+            <div class="px-4 py-3">
+                Resolved <span class="ml-2 bg-green-500 text-white rounded-full px-2 py-1">@Model.Count(e => e.Status == "resolved")</span>
+            </div>
+            <div class="px-4 py-3">
+                Ignored <span class="ml-2 bg-blue-500 text-white rounded-full px-2 py-1">@Model.Count(e => e.Status == "ignored")</span>
+            </div>
+            <div class="px-4 py-3">
+                Permanently ignored <span class="ml-2 bg-yellow-500 text-white rounded-full px-2 py-1">@Model.Count(e => e.Status == "permanentlyignored")</span>
+            </div>
+        </div>
+
+        <table class="w-full text-sm text-left text-gray-500 table-fixed">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+                <th scope="col" class="p-4 w-12">
+                    <div class="flex items-center">
+                        <input id="checkbox-all" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                        <label for="checkbox-all" class="sr-only">checkbox</label>
+                    </div>
+                </th>
+                <th scope="col" class="px-4 py-2 w-2/3">Message</th>
+                <th scope="col" class="px-4 py-2 w-1/6">Last seen</th>
+                <th scope="col" class="px-4 py-2 w-1/6">Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var errorGroup in Model)
+            {
+                <tr class="bg-white border-b hover:bg-gray-50">
+                    <td class="w-12 p-4">
+                        <div class="flex items-center">
+                            <input id="checkbox-@errorGroup.Identifier" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="checkbox-@errorGroup.Identifier" class="sr-only">checkbox</label>
+                        </div>
+                    </td>
+                    <td class="px-4 py-2 font-medium text-gray-900 truncate">
+                        <a href="@errorGroup.ApplicationUrl" class="font-medium text-blue-600 hover:underline">@errorGroup.Message</a>
+                    </td>
+                    <td class="px-4 py-2 whitespace-nowrap text-red-600">
+                        @{
+                            var lastSeenText = errorGroup.LastOccurredAt.ToHumanReadableTimeAgo();
+                        }
+                        @lastSeenText
+                    </td>
+                    <td class="px-4 py-2 whitespace-nowrap">
+                        @(errorGroup.ResolvedIn != null ? "Resolved" : "Active")
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,133 @@
+﻿@model IEnumerable<TimeseriesData>
+
+@{
+    var chartId = $"timeseriesChart_{Guid.NewGuid()}";
+}
+
+<div id="error-timeseries-content" class="loading-container">
+    <div class="loading-indicator h-[40vh] border border-secondary-blue-grey m-4">
+        <div class="w-full p-2 font-medium bg-gray-100">
+            Errors by hour
+        </div>
+
+        <div class="flex items-center justify-center h-[calc(40vh-40px)] p-2">
+            @await Html.PartialAsync("/Areas/Shared/_LoadingSpinner.cshtml")
+        </div>
+    </div>
+
+    <div class="h-[40vh] border border-secondary-blue-grey m-4">
+        <div class="w-full p-2 font-medium bg-gray-100">
+            Errors by hour
+        </div>
+
+        <div class="h-[calc(40vh-40px)] w-full p-2">
+            <canvas id="@chartId" class="h-full w-full"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (!window.chartInstances) {
+        window.chartInstances = {};
+    }
+
+    function initializeChart(chartId, data) {
+        let ctx = document.getElementById(chartId).getContext('2d');
+
+        if (window.chartInstances[chartId]) {
+            window.chartInstances[chartId].destroy();
+        }
+
+        let datasets = data.map(function(series) {
+            return {
+                label: 'Errors',
+                data: series.series.map(function(point) {
+                    return {
+                        x: new Date(point.time),
+                        y: point.value
+                    };
+                }),
+                borderColor: "#2C9AF0",
+                backgroundColor: "#EDF5FC",
+                fill: true,
+                pointRadius: 0,
+                borderWidth: 2
+            };
+        });
+
+        window.chartInstances[chartId] = new Chart(ctx, {
+            type: 'line',
+            data: { datasets },
+            options: {
+                animation: { duration: 0.05 },
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                            display: false
+                    },
+                    crosshair: {
+                        line: {
+                            color: '#666',
+                            width: 1,
+                            dashPattern: [5, 5]
+                        },
+                        snap: {
+                            enabled: true
+                        },
+                        sync: {
+                            enabled: true
+                        },
+                        zoom: {
+                            enabled: true
+                        }
+                    },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'hour',
+                            displayFormats: {
+                                hour: 'HH:mm',
+                                day: 'MMM d',
+                                week: 'MMM d',
+                                month: 'MMM YYYY'
+                            },
+                            tooltipFormat: 'MMM d, HH:mm'
+                        },
+                        ticks: {
+                            autoSkip: true,
+                            maxRotation: 0,
+                            maxTicksLimit: 8, 
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 8,
+                        },
+                        beginAtZero: true
+                    }
+                },
+                interaction: { mode: 'nearest', axis: 'x', intersect: false }
+            }
+        });
+    }
+
+    function loadChart() {
+        let chartId = '@chartId';
+        let chartData = @Html.Raw(Json.Serialize(Model));
+
+        if (document.getElementById(chartId)) {
+            initializeChart(chartId, chartData);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadChart);
+
+    document.addEventListener('htmx:afterSwap', function(evt) {
+        loadChart();
+    });
+</script>

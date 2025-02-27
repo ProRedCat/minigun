@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Minigun.Areas.CrashReporting.Models;
+using Minigun.Models;
 using Minigun.Services;
 
 namespace Minigun.Areas.CrashReporting.Controllers;
@@ -16,35 +18,72 @@ public class CrashReportingController : Controller
     }
 
     [HttpGet("/crashreporting")]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index([FromQuery] string? applicationIdentifier)
     {
-        var applications = await _raygunApiService.ListApplicationsAsync(100);
-
-        if (applications == null || !applications.Any())
+        if (applicationIdentifier == null)
         {
-            return NotFound("No applications found.");
+            var applications = await _raygunApiService.ListApplicationsAsync(100);
+
+            if (applications.Count == 0)
+            {
+                return NotFound("No applications found.");
+            }
+
+            var firstApplication = applications.First();
+
+            return RedirectToAction("FullCrashPage", new { applicationIdentifier = firstApplication.Identifier });
         }
-
-        var firstApplication = applications.First();
-
-        return RedirectToAction("FullCrashPage", new { applicationIdentifier = firstApplication.Identifier });
+        
+        Response.Headers.Append("HX-Push", $"/crashreporting/{applicationIdentifier}/");
+        
+        var viewModel = new CrashReportingViewModel(
+            new List<ErrorGroup>(),
+            new List<TimeseriesData>()
+        );
+        
+        return PartialView("Index", viewModel);
     }
 
     [HttpGet("/crashreporting/{applicationIdentifier}")]
-    public async Task<IActionResult> FullCrashPage(string applicationIdentifier)
+    public IActionResult FullCrashPage(string applicationIdentifier)
     {
-        // TODO: See if there is a nicer way to handle this, as this method is identical to the one below
-        // this may be handled once we move to OnLoad fetching of partials rather than full page load
-        var errorGroups = await _raygunApiService.ListErrorGroupsAsync(applicationIdentifier) ?? [];
+        var viewModel = new CrashReportingViewModel(
+            new List<ErrorGroup>(),
+            new List<TimeseriesData>()
+        );
+
+        return View("Index", viewModel);
+    }
+
+    [HttpGet("/crashreporting/error-groups")]
+    public async Task<IActionResult> ErrorGroupsPartial(
+        [FromQuery] string applicationIdentifier,
+        [FromQuery] DateTime startTime,
+        [FromQuery] DateTime endTime
+        )
+    {
+        var errorGroups = await _raygunApiService.ListErrorGroupsAsync(applicationIdentifier, orderby: ["lastOccurredAt desc"]);
         
-        return View("Index", errorGroups);
+        var filteredGroups = errorGroups
+            .Where(e => e.LastOccurredAt > startTime)
+            .ToList();
+        
+        Response.Headers.Append("HX-Push", $"/crashreporting/{applicationIdentifier}/");
+
+        return PartialView("_ErrorGroups", filteredGroups);
     }
     
-    [HttpGet("/crashreporting/{applicationIdentifier}/error-groups")]
-    public async Task<IActionResult> ErrorGroupsPartial(string applicationIdentifier)
+    [HttpGet("/crashreporting/error-timeseries")]
+    public async Task<IActionResult> ErrorTimeseriesPartial(
+        [FromQuery] string applicationIdentifier,
+        [FromQuery] DateTime startTime,
+        [FromQuery] DateTime endTime
+        )
     {
-        var errorGroups = await _raygunApiService.ListErrorGroupsAsync(applicationIdentifier) ?? [];
+        var errorTimeseries = await _raygunApiService.GetErrorTimeseriesAsync(applicationIdentifier, startTime, endTime);
         
-        return PartialView("_ErrorGroups", errorGroups);
+        Response.Headers.Append("HX-Push", $"/crashreporting/{applicationIdentifier}/");
+
+        return PartialView("_ErrorTimeseries", errorTimeseries);
     }
 }

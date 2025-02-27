@@ -16,3 +16,25 @@ html {
   position: relative;
   min-height: 100%;
 }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading-indicator .spinner-path {
+  animation: spin 0.8s linear infinite;
+  transform-origin: center;
+}
+
+.loading-container .loading-indicator {
+  display: none;
+}
+
+.loading-container.htmx-request .loading-indicator {
+  display: block !important;
+}
+
+.loading-container.htmx-request > *:not(.loading-indicator) {
+  display: none !important;
+}

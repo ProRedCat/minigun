@@ -1,5 +1,5 @@
 ﻿<!-- Navigation Bar -->
-<nav id="responsive-nav" class="bg-primary-navy-dark h-screen p-4 transition-all duration-300 ease-in-out overflow-x-hidden flex flex-col">
+<nav id="responsive-nav" class="sticky top-0 min-h-screen bg-primary-navy-dark p-4 transition-all duration-300 ease-in-out overflow-x-hidden flex flex-col">
     <!-- Logo Section -->
     <div class="mb-10">
         <!-- Collapsed Logo -->
@@ -11,43 +11,71 @@
     <!-- Navigation Links -->
     <ul class="space-y-4 flex-grow">
         <li>
-            <a href="@Url.Action("Index", "CrashReporting", new { Area = "CrashReporting" })" class="flex items-center space-x-4 text-secondary-blue-grey nav-link group">
+            <a href="@Url.Action("Index", "CrashReporting", new { Area = "CrashReporting" })"
+               hx-get="@Url.Action("Index", "CrashReporting", new { Area = "CrashReporting" })"
+               hx-target="#minigun-content"
+               hx-include="#selected-application"
+               class="flex items-center space-x-4 text-secondary-blue-grey nav-link group">
                 <img src="/images/svg/cr-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Crash Reporting</span>
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Index", "Rum", new { Area = "Rum" })" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
+            <a href="@Url.Action("Index", "Rum", new { Area = "Rum" })"
+               hx-get="@Url.Action("Index", "Rum", new { Area = "Rum" })"
+               hx-target="#minigun-content"
+               hx-include="#selected-application"
+               class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
                 <img src="/images/svg/rum-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Real User Monitoring</span>
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Index", "Deployments", new { Area = "Deployments" })" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
+            <a href="@Url.Action("Index", "Deployments", new { Area = "Deployments" })"
+               hx-get="@Url.Action("Index", "Deployments", new { Area = "Deployments" })"
+               hx-target="#minigun-content"
+               hx-include="#selected-application"
+               class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
                 <img src="/images/svg/deployments-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Deployments</span>
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Index", "Users", new { Area = "Users" })" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
+            <a href="@Url.Action("Index", "Users", new { Area = "Users" })"
+               hx-get="@Url.Action("Index", "Users", new { Area = "Users" })"
+               hx-target="#minigun-content"
+               hx-include="#selected-application"
+               class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
                 <img src="/images/svg/users-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Users</span>
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Index", "Teams", new { Area = "Teams" })" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
+            <a href="@Url.Action("Index", "Teams", new { Area = "Teams" })"
+               hx-get="@Url.Action("Index", "Teams", new { Area = "Teams" })"
+               hx-target="#minigun-content"
+               hx-include="#selected-application"
+               class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
                 <img src="/images/svg/team-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Manage Teams</span>
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Index", "Settings", new { Area = "Settings" })" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
+            <a href="@Url.Action("Index", "Settings", new { Area = "Settings" })"
+               hx-get="@Url.Action("Index", "Settings", new { Area = "Settings" })"
+               hx-target="#minigun-content"
+               hx-include="#selected-application"
+               class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
                 <img src="/images/svg/settings-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">Settings</span>
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Index", "WhatsNew", new { Area = "WhatsNew" })" class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
+            <a href="@Url.Action("Index", "WhatsNew", new { Area = "WhatsNew" })"
+               hx-get="@Url.Action("Index", "WhatsNew", new { Area = "WhatsNew" })"
+               hx-target="#minigun-content"
+               hx-include="#selected-application"
+               class="flex items-center space-x-4 text-secondary-blue-grey hover:text-primary-blue-light nav-link group">
                 <img src="/images/svg/whatsnew-icon.svg" alt="" class="w-6 h-6 ml-1 fill-current">
                 <span class="nav-text transition-opacity duration-300 whitespace-nowrap">What's New</span>
             </a>
@@ -59,7 +87,7 @@
     </button>
 </nav>
 
-<!-- CSS -->
+<!-- CSS remains unchanged -->
 <style>
     /* Default navigation width (maximized) */
     #responsive-nav {

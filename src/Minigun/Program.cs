@@ -9,8 +9,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddRaygun(builder.Configuration);
-builder.Services.AddRaygunUserProvider();
+builder.Services.AddRaygun(builder.Configuration).AddRaygunUserProvider();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient<IRaygunApiService, RaygunApiService>();
@@ -47,7 +46,7 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
+app.UseStaticFiles();
 
 
 // This feels gross and wrong

@@ -4,23 +4,30 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Minigun - @ViewData["Title"]</title>
-    <script type="importmap"></script>
-    <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+
+    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/tailwind.css" asp-append-version="true"/>
 </head>
-    <body>
-        <div class="flex w-full">
-            <aside>
-                @await Html.PartialAsync("/Areas/Shared/_SideNav.cshtml")
-            </aside>
-            <main role="main" class="flex-grow">
-                <div>
-                    @await Component.InvokeAsync("ApplicationDropdown")
-                </div>
-                
-                @RenderBody()
-            </main>
+<body>
+<div class="flex max-w-screen min-h-screen">
+    <aside class="sticky top-0 h-screen">
+        @await Html.PartialAsync("/Areas/Shared/_SideNav.cshtml")
+    </aside>
+    <main role="main" class="w-full flex flex-col">
+        <div id="application-dropdown" class="sticky top-0 z-10 flex justify-between bg-white w-full p-2 border-secondary-blue-grey border-b ">
+            @await Component.InvokeAsync("ApplicationDropdown")
+            @await Component.InvokeAsync("DateSelector")
         </div>
-    </body>
+        <div id="minigun-content" class="flex-1 overflow-y-auto">
+            @RenderBody()
+        </div>
+    </main>
+</div>
+</body>
 </html>

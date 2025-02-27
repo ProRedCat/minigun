@@ -1,0 +1,92 @@
+name: Deploy to Amazon Linux EC2
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.100"
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Template appsettings.json
+        run: |
+          sed -i 's|#{RAYGUN_API_KEY}|'"$RAYGUN_API_KEY"'|g' src/Minigun/appsettings.json
+        env:
+          RAYGUN_API_KEY: ${{ secrets.RAYGUN_API_KEY }}
+
+      - name: Publish .NET Core app
+        run: dotnet publish Minigun.sln -c Release -o ./publish -p:PublishEnvironment=CI
+
+      - name: Stop Application on EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          echo "$EC2_SSH_KEY" > ./ec2_key.pem
+          chmod 600 ./ec2_key.pem
+
+          # Disable host key checking
+          mkdir -p ~/.ssh
+          echo -e "Host *\n\tStrictHostKeyChecking no" > ~/.ssh/config
+
+          ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+            sudo pkill Minigun || true
+          EOF
+
+          sleep 2
+
+      - name: Upload files to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          DEPLOY_DIR: /var/www/minigun
+        run: |
+          # Upload files to EC2
+          scp -i ./ec2_key.pem -r ./publish/* $EC2_USER@$EC2_HOST:$DEPLOY_DIR
+          
+      - name: Create Raygun Deployment
+        uses: MindscapeHQ/raygun-deployments-action@v1
+        with:
+          personal-access-token: ${{ secrets.RAYGUN_PAT }}
+          api-key: ${{ secrets.RAYGUN_API_KEY }}
+          version: ${{ steps.vars.outputs.sha_short }}
+          comment: ${{ github.event.head_commit.message }}
+
+      - name: Start Application on EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          DEPLOY_DIR: /var/www/minigun
+        run: |
+          ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << EOF
+            set -x
+
+            cd $DEPLOY_DIR
+            sudo nohup ./Minigun > minigun.log 2>&1 &
+
+            ps aux | grep Minigun
+            tail -n 20 minigun.log
+          EOF
+
+      - name: Clean up
+        run: rm -f ./ec2_key.pem

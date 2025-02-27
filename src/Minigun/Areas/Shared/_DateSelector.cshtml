@@ -1,0 +1,218 @@
+﻿@model DateSelector
+
+<!-- Date Range Display Button -->
+<div class="relative inline-block text-left">
+    <button id="dateRangeButton" type="button" class="inline-flex items-center justify-center w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+        <!-- Display the selected date range -->
+        <span id="selectedDateRangeText">@Model.SelectedRange</span>
+        <!-- Arrow Icon -->
+        <svg class="ml-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div id="dateRangeMenu" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden z-10">
+        <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="dateRangeButton">
+            <!-- Preset Options -->
+            <button data-range="1day" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">1 Day</button>
+            <button data-range="1week" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">1 Week</button>
+            <button data-range="1month" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">1 Month</button>
+            <button data-range="6months" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">6 Months</button>
+            <!-- Divider -->
+            <div class="border-t border-gray-100"></div>
+            <!-- Custom Range Option -->
+            <button id="customRangeOption" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Custom Range</button>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="startTime" name="startTime" value="@Model.StartDate.ToString("o")">
+<input type="hidden" id="endTime" name="endTime" value="@Model.EndDate.ToString("o")">
+
+<!-- Custom Range Modal -->
+<div id="customRangeModal" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 hidden z-20">
+    <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg w-full">
+        <div class="px-6 py-4">
+            <h3 class="text-lg font-medium text-gray-900">Select Custom Date Range</h3>
+            <div class="mt-4">
+                <div class="flex flex-col space-y-4">
+                    <!-- Start Date -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Start Date</label>
+                        <input type="datetime-local" id="customstartTime" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                               min="@Model.MinDate" max="@Model.MaxDate">
+                    </div>
+                    <!-- End Date -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">End Date</label>
+                        <input type="datetime-local" id="customendTime" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                               min="@Model.MinDate" max="@Model.MaxDate">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal Actions -->
+        <div class="px-6 py-4 bg-gray-50 flex justify-end">
+            <button id="cancelCustomRangeButton" type="button" class="mr-4 inline-flex justify-center rounded-md border border-gray-300 px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-100">
+                Cancel
+            </button>
+            <button id="applyCustomRangeButton" type="button" class="inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-blue-600 text-sm font-medium text-white hover:bg-blue-700">
+                Apply
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dateRangeButton = document.getElementById('dateRangeButton');
+        const dateRangeMenu = document.getElementById('dateRangeMenu');
+        const selectedDateRangeText = document.getElementById('selectedDateRangeText');
+        const customRangeModal = document.getElementById('customRangeModal');
+        const customstartTimeInput = document.getElementById('customstartTime');
+        const customendTimeInput = document.getElementById('customendTime');
+        const applyCustomRangeButton = document.getElementById('applyCustomRangeButton');
+        const cancelCustomRangeButton = document.getElementById('cancelCustomRangeButton');
+        const presetButtons = dateRangeMenu.querySelectorAll('button[data-range]');
+        const customRangeOption = document.getElementById('customRangeOption');
+
+        const maxDate = new Date('@Model.MaxDate');
+        const minDate = new Date('@Model.MinDate');
+
+        // Toggle dropdown menu
+        dateRangeButton.addEventListener('click', function (event) {
+            event.stopPropagation();
+            dateRangeMenu.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            if (!dateRangeButton.contains(event.target) && !dateRangeMenu.contains(event.target)) {
+                dateRangeMenu.classList.add('hidden');
+            }
+        });
+
+        // Handle preset options
+        presetButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const range = this.getAttribute('data-range');
+                let startTime;
+                const endTime = new Date();
+
+                switch (range) {
+                    case '6months':
+                        startTime = new Date();
+                        startTime.setMonth(startTime.getMonth() - 6);
+                        break;
+                    case '1month':
+                        startTime = new Date();
+                        startTime.setMonth(startTime.getMonth() - 1);
+                        break;
+                    case '1week':
+                        startTime = new Date();
+                        startTime.setDate(startTime.getDate() - 7);
+                        break;
+                    case '1day':
+                        startTime = new Date();
+                        startTime.setDate(startTime.getDate() - 1);
+                        break;
+                }
+
+                if (startTime < minDate) {
+                    startTime = minDate;
+                }
+
+                // Update the button text
+                const options = {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric'
+                };                
+                selectedDateRangeText.textContent = `${startTime.toLocaleDateString(undefined, options)} - ${endTime.toLocaleDateString(undefined, options)}`;
+
+                // Hide the dropdown menu
+                dateRangeMenu.classList.add('hidden');
+
+                document.getElementById('startTime').value = startTime.toISOString();
+                document.getElementById('endTime').value = endTime.toISOString();
+
+                // Dispatch event with selected dates
+                const dateRangeSelectedEvent = new CustomEvent('dateRangeSelected', {
+                    detail: {
+                        startTime: startTime,
+                        endTime: endTime
+                    }
+                });
+                document.dispatchEvent(dateRangeSelectedEvent);
+            });
+        });
+
+        // Open custom range modal
+        customRangeOption.addEventListener('click', function () {
+            dateRangeMenu.classList.add('hidden');
+            customRangeModal.classList.remove('hidden');
+        });
+
+        // Apply custom range
+        applyCustomRangeButton.addEventListener('click', function () {
+            const startTimeValue = customstartTimeInput.value;
+            const endTimeValue = customendTimeInput.value;
+
+            if (!startTimeValue || !endTimeValue) {
+                alert('Please select both start and end dates.');
+                return;
+            }
+
+            const startTime = new Date(startTimeValue);
+            const endTime = new Date(endTimeValue);
+
+            if (startTime > endTime) {
+                alert('Start date cannot be after end date.');
+                return;
+            }
+
+            if (startTime < minDate || endTime > maxDate) {
+                alert('Selected dates are out of the allowed range.');
+                return;
+            }
+
+            // Update the button text
+            const options = {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric'
+            };
+            selectedDateRangeText.textContent = `${startTime.toLocaleDateString(undefined, options)} - ${endTime.toLocaleDateString(undefined, options)}`;
+
+            // Hide the modal
+            customRangeModal.classList.add('hidden');
+
+            // Dispatch event with selected dates
+            const dateRangeSelectedEvent = new CustomEvent('dateRangeSelected', {
+                detail: {
+                    startTime: startTime,
+                    endTime: endTime
+                }
+            });
+            document.dispatchEvent(dateRangeSelectedEvent);
+        });
+
+        // Cancel custom range
+        cancelCustomRangeButton.addEventListener('click', function () {
+            customRangeModal.classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        customRangeModal.addEventListener('click', function (event) {
+            if (event.target === customRangeModal) {
+                customRangeModal.classList.add('hidden');
+            }
+        });
+    });
+</script>

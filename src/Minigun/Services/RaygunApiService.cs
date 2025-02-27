@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using Minigun.Models;
 
@@ -8,7 +9,7 @@ public class RaygunApiService : IRaygunApiService
 {
     private readonly HttpClient _httpClient;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    
+
     private static readonly JsonSerializerOptions JsonOptions;
 
     static RaygunApiService()
@@ -36,7 +37,9 @@ public class RaygunApiService : IRaygunApiService
         }
     }
 
-    public async Task<List<Application>?> ListApplicationsAsync(int? count = null, int? offset = null,
+    public async Task<List<Application>> ListApplicationsAsync(
+        int? count = null,
+        int? offset = null,
         string[]? orderby = null)
     {
         SetAuthorizationHeader();
@@ -51,10 +54,14 @@ public class RaygunApiService : IRaygunApiService
         response.EnsureSuccessStatusCode();
 
         var responseContent = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<List<Application>>(responseContent, JsonOptions);
+        return JsonSerializer.Deserialize<List<Application>>(responseContent, JsonOptions) ?? [];
     }
 
-    public async Task<List<ErrorGroup>?> ListErrorGroupsAsync(string applicationId, int? count = null, int? offset = null, string[]? orderby = null)
+    public async Task<List<ErrorGroup>> ListErrorGroupsAsync(
+        string applicationId,
+        int? count = null,
+        int? offset = null,
+        string[]? orderby = null)
     {
         SetAuthorizationHeader();
 
@@ -68,6 +75,67 @@ public class RaygunApiService : IRaygunApiService
         response.EnsureSuccessStatusCode();
 
         var responseContent = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<List<ErrorGroup>>(responseContent, JsonOptions);
+        return JsonSerializer.Deserialize<List<ErrorGroup>>(responseContent, JsonOptions) ?? [];
+    }
+
+    public async Task<List<TimeseriesData>> GetErrorTimeseriesAsync(
+        string applicationId,
+        DateTime start,
+        DateTime end,
+        List<string>? errorGroupIds = null)
+    {
+        SetAuthorizationHeader();
+
+        var requestBody = new
+        {
+            start = start.ToUniversalTime(),
+            end = end.ToUniversalTime(),
+            granularity = "1h",
+            aggregation = "count",
+            metrics = new[] { "errorInstances" },
+            filter = errorGroupIds?.Any() == true
+                ? $"errorGroupIdentifier IN ({string.Join(", ", errorGroupIds.Select(id => $"'{id}'"))})"
+                : null
+        };
+
+        var content = new StringContent(
+            JsonSerializer.Serialize(requestBody, JsonOptions),
+            Encoding.UTF8,
+            "application/json");
+
+        var response = await _httpClient.PostAsync($"metrics/{applicationId}/errors/time-series", content);
+        response.EnsureSuccessStatusCode();
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<List<TimeseriesData>>(responseContent, JsonOptions) ?? [];
+    }
+    
+    public async Task<List<HistogramData>> GetRumHistogramAsync(
+        string applicationId,
+        DateTime start,
+        DateTime end,
+        string[] metrics,
+        string? filter = null)
+    {
+        SetAuthorizationHeader();
+
+        var requestBody = new
+        {
+            start = start.ToUniversalTime(),
+            end = end.ToUniversalTime(),
+            metrics = metrics,
+            filter = filter
+        };
+
+        var content = new StringContent(
+            JsonSerializer.Serialize(requestBody, JsonOptions),
+            Encoding.UTF8,
+            "application/json");
+
+        var response = await _httpClient.PostAsync($"metrics/{applicationId}/pages/histogram", content);
+        response.EnsureSuccessStatusCode();
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<List<HistogramData>>(responseContent, JsonOptions) ?? [];
     }
 }

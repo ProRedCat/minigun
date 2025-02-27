@@ -15,6 +15,6 @@ public class WhatsNewController : Controller
     [HttpGet("/whatsnew")]
     public IActionResult Index()
     {
-        return View();
+        return PartialView();
     }
 }
