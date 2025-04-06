@@ -27,6 +27,9 @@
         <div id="minigun-content" class="flex-1 overflow-y-auto">
             @RenderBody()
         </div>
+        <footer class="fixed bottom-0 right-0 p-2 text-xs text-gray-500">
+            @await Component.InvokeAsync("RuntimeInfo")
+        </footer>
     </main>
 </div>
 </body>
