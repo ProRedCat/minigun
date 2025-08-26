@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Minigun.Models;
 using Minigun.Services;
+using System.Text.Json;
 
 namespace Minigun.ViewComponents;
 
@@ -18,7 +19,10 @@ public class ApplicationDropdownViewComponent : ViewComponent
         var pathParts = Request.Path.ToString().Split("/", StringSplitOptions.RemoveEmptyEntries);
         var selectedId = pathParts.Length > 1 ? pathParts[1] : null;
 
-        var applications = await _raygunApiService.ListApplicationsAsync(100);
+        var applications = await GetAllApplicationsAsync();
+        
+        // Sort applications alphabetically
+        applications = applications.OrderBy(a => a.Name).ToList();
         
         // Find selected application and move it to first position if found
         var selectedApp = applications.FirstOrDefault(a => a.Identifier == selectedId);
@@ -37,5 +41,25 @@ public class ApplicationDropdownViewComponent : ViewComponent
         };
         
         return View("/Areas/Shared/_ApplicationsPartial.cshtml", model);
+    }
+
+    private async Task<List<Application>> GetAllApplicationsAsync()
+    {
+        var allApplications = new List<Application>();
+        var offset = 0;
+        const int pageSize = 100;
+        bool hasMoreData;
+
+        do
+        {
+            var batch = await _raygunApiService.ListApplicationsAsync(pageSize, offset);
+            allApplications.AddRange(batch);
+            
+            hasMoreData = batch.Count == pageSize;
+            offset += pageSize;
+        } 
+        while (hasMoreData);
+
+        return allApplications;
     }
 }
