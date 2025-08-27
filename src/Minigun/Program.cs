@@ -2,8 +2,11 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Mindscape.Raygun4Net.AspNetCore;
 using Minigun.Middleware;
 using Minigun.Services;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddControllersWithViews();
 
@@ -36,8 +39,6 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
-app.UseRaygun();
 
 app.UseRaygunPatMiddleware();
 

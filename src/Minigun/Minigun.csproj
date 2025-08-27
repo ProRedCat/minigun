@@ -10,6 +10,11 @@
     
     <ItemGroup>
         <PackageReference Include="Mindscape.Raygun4Net.AspNetCore"/>
+        <PackageReference Include="Serilog" />
+        <PackageReference Include="Serilog.Sinks.Raygun" />
+        <PackageReference Include="Serilog.AspNetCore" />
+        <PackageReference Include="Serilog.Enrichers.Environment" />
+        <PackageReference Include="Serilog.Enrichers.Thread" />
     </ItemGroup>
     
     <ItemGroup>
