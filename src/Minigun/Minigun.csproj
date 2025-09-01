@@ -15,6 +15,8 @@
         <PackageReference Include="Serilog.AspNetCore" />
         <PackageReference Include="Serilog.Enrichers.Environment" />
         <PackageReference Include="Serilog.Enrichers.Thread" />
+        <PackageReference Include="Polly.Extensions.Http" />
+        <PackageReference Include="Microsoft.Extensions.Http.Polly" />
     </ItemGroup>
     
     <ItemGroup>

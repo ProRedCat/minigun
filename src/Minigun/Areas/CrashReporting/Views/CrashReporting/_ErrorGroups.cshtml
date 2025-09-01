@@ -28,9 +28,10 @@
                         <label for="checkbox-all" class="sr-only">checkbox</label>
                     </div>
                 </th>
-                <th scope="col" class="px-4 py-2 w-2/3">Message</th>
+                <th scope="col" class="px-4 py-2 w-2/5">Message</th>
                 <th scope="col" class="px-4 py-2 w-1/6">Last seen</th>
-                <th scope="col" class="px-4 py-2 w-1/6">Status</th>
+                <th scope="col" class="px-4 py-2 w-1/6">First seen</th>
+                <th scope="col" class="px-4 py-2 w-1/6">Count</th>
             </tr>
             </thead>
         </table>
@@ -65,9 +66,10 @@
                         <label for="checkbox-all" class="sr-only">checkbox</label>
                     </div>
                 </th>
-                <th scope="col" class="px-4 py-2 w-2/3">Message</th>
+                <th scope="col" class="px-4 py-2 w-2/5">Message</th>
                 <th scope="col" class="px-4 py-2 w-1/6">Last seen</th>
-                <th scope="col" class="px-4 py-2 w-1/6">Status</th>
+                <th scope="col" class="px-4 py-2 w-1/6">First seen</th>
+                <th scope="col" class="px-4 py-2 w-1/6">Count</th>
             </tr>
             </thead>
             <tbody>
@@ -83,14 +85,25 @@
                     <td class="px-4 py-2 font-medium text-gray-900 truncate">
                         <a href="@errorGroup.ApplicationUrl" class="font-medium text-blue-600 hover:underline">@errorGroup.Message</a>
                     </td>
-                    <td class="px-4 py-2 whitespace-nowrap text-red-600">
+                    <td class="px-4 py-2 whitespace-nowrap text-gray-600">
                         @{
                             var lastSeenText = errorGroup.LastOccurredAt.ToHumanReadableTimeAgo();
                         }
                         @lastSeenText
                     </td>
-                    <td class="px-4 py-2 whitespace-nowrap">
-                        @(errorGroup.ResolvedIn != null ? "Resolved" : "Active")
+                    <td class="px-4 py-2 whitespace-nowrap text-gray-600">
+                        @{
+                            var firstSeenText = errorGroup.CreatedAt.ToHumanReadableTimeAgo();
+                        }
+                        @firstSeenText
+                    </td>
+                    <td class="px-4 py-2 whitespace-nowrap text-gray-700 font-semibold"
+                        hx-get="/crashreporting/error-group-count"
+                        hx-vals='{"applicationIdentifier": "@Context.Request.Query["applicationIdentifier"]", "errorGroupId": "@errorGroup.Identifier", "startTime": "@Context.Request.Query["startTime"]", "endTime": "@Context.Request.Query["endTime"]"}'
+                        hx-trigger="intersect once"
+                        hx-target="#count-@errorGroup.Identifier"
+                        hx-indicator=".no-global-indicator">
+                        <span id="count-@errorGroup.Identifier" class="text-gray-400 animate-pulse">–</span>
                     </td>
                 </tr>
             }

@@ -14,4 +14,6 @@ public interface IRaygunApiService
 
     Task<List<HistogramData>> GetRumHistogramAsync(string applicationId, DateTime start, DateTime end, string[] metrics,
         string? filter = null);
+    
+    Task<int> GetErrorGroupCountAsync(string applicationId, string errorGroupId, DateTime start, DateTime end);
 }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Mindscape.Raygun4Net.AspNetCore;
 using Minigun.Middleware;
 using Minigun.Services;
+using System.Threading.RateLimiting;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +16,11 @@ builder.Services.AddHttpClient();
 builder.Services.AddRaygun(builder.Configuration).AddRaygunUserProvider();
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient<IRaygunApiService, RaygunApiService>();
+
+// Configure rate limiting for Raygun API (10 requests per second)
+builder.Services.AddTransient<RateLimitingHandler>();
+builder.Services.AddHttpClient<IRaygunApiService, RaygunApiService>()
+    .AddHttpMessageHandler<RateLimitingHandler>();
 
 builder.Services.Configure<RouteOptions>(options =>
 {

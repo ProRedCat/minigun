@@ -94,7 +94,7 @@ public class RaygunApiService : IRaygunApiService
             aggregation = "count",
             metrics = new[] { "errorInstances" },
             filter = errorGroupIds?.Any() == true
-                ? $"errorGroupIdentifier IN ({string.Join(", ", errorGroupIds.Select(id => $"'{id}'"))})"
+                ? $"errorGroupIdentifier IN ({string.Join(", ", errorGroupIds)})"
                 : null
         };
 
@@ -137,5 +137,24 @@ public class RaygunApiService : IRaygunApiService
 
         var responseContent = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<List<HistogramData>>(responseContent, JsonOptions) ?? [];
+    }
+
+    public async Task<int> GetErrorGroupCountAsync(string applicationId, string errorGroupId, DateTime start, DateTime end)
+    {
+        try
+        {
+            var timeseriesData = await GetErrorTimeseriesAsync(applicationId, start, end, new List<string> { errorGroupId });
+            
+            var totalCount = timeseriesData
+                .SelectMany(ts => ts.Series ?? new List<TimeseriesPoint>())
+                .Sum(point => (int)point.Value);
+            
+            return totalCount;
+        }
+        catch (Exception)
+        {
+            // If we can't get data for this error group, set count to 0
+            return 0;
+        }
     }
 }
