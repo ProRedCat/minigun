@@ -40,6 +40,12 @@ public class HomeController : Controller
         return new EmptyResult();
     }
 
+    [HttpGet("/Error")]
+    public IActionResult Error()
+    {
+        return View();
+    }
+
     private async Task<bool> IsValidPatToken(string patToken)
     {
         var client = _httpClientFactory.CreateClient();

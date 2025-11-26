@@ -104,7 +104,11 @@ public class RaygunApiService : IRaygunApiService
             "application/json");
 
         var response = await _httpClient.PostAsync($"metrics/{applicationId}/errors/time-series", content);
-        response.EnsureSuccessStatusCode();
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            return [];
+        }
 
         var responseContent = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<List<TimeseriesData>>(responseContent, JsonOptions) ?? [];
@@ -133,7 +137,11 @@ public class RaygunApiService : IRaygunApiService
             "application/json");
 
         var response = await _httpClient.PostAsync($"metrics/{applicationId}/pages/histogram", content);
-        response.EnsureSuccessStatusCode();
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            return [];
+        }
 
         var responseContent = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<List<HistogramData>>(responseContent, JsonOptions) ?? [];
