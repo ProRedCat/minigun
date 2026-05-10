@@ -48,7 +48,7 @@ jobs:
           echo -e "Host *\n\tStrictHostKeyChecking no" > ~/.ssh/config
 
           ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
-            sudo pkill Minigun || true
+            sudo systemctl stop minigun || true
           EOF
 
           sleep 2
@@ -62,6 +62,16 @@ jobs:
         run: |
           # Upload files to EC2
           scp -i ./ec2_key.pem -r ./publish/* $EC2_USER@$EC2_HOST:$DEPLOY_DIR
+
+          # Upload systemd unit file and install it
+          scp -i ./ec2_key.pem ./deploy/minigun.service $EC2_USER@$EC2_HOST:/tmp/minigun.service
+          ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+            sudo mv /tmp/minigun.service /etc/systemd/system/minigun.service
+            sudo chown root:root /etc/systemd/system/minigun.service
+            sudo chmod 644 /etc/systemd/system/minigun.service
+            sudo systemctl daemon-reload
+            sudo systemctl enable minigun
+          EOF
           
       - name: Create Raygun Deployment
         uses: MindscapeHQ/raygun-deployments-action@v1
@@ -81,11 +91,8 @@ jobs:
           ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << EOF
             set -x
 
-            cd $DEPLOY_DIR
-            sudo nohup ./Minigun > minigun.log 2>&1 &
-
-            ps aux | grep Minigun
-            tail -n 20 minigun.log
+            sudo systemctl start minigun
+            sudo systemctl status minigun --no-pager
           EOF
 
       - name: Clean up
