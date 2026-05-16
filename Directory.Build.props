@@ -18,6 +18,6 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(PublishEnvironment)' == 'CI'">
-        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+        <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
     </PropertyGroup>
 </Project>
