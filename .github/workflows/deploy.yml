@@ -33,7 +33,15 @@ jobs:
           RAYGUN_API_KEY: ${{ secrets.RAYGUN_API_KEY }}
 
       - name: Publish .NET Core app
-        run: dotnet publish src/Minigun/Minigun.csproj -c Release -o ./publish -p:PublishEnvironment=CI
+        run: >
+          dotnet publish src/Minigun/Minigun.csproj
+          -c Release
+          -r linux-arm64
+          --self-contained true
+          -o ./publish
+          -p:PublishEnvironment=CI
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
 
       - name: Stop Application on EC2
         env:
