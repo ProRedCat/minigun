@@ -32,7 +32,7 @@
             <div class="dropdown-item px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 @(application.Identifier == Model.SelectedApplicationId ? "bg-gray-100" : "")"
                  data-application-id="@application.Identifier"
                  data-application-name="@application.Name"
-                 hx-on:click="selectApplication(this)">
+                 onclick="selectApplication(this)">
                 @application.Name
             </div>
         }

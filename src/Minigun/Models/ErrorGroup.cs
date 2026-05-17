@@ -11,6 +11,7 @@ public class ErrorGroup
     public ErrorGroupResolvedIn? ResolvedIn { get; set; }
     public bool DiscardNewOccurrences { get; set; }
     public string? ApplicationUrl { get; set; }
+    public int Count { get; set; }
 }
 
 public class ErrorGroupResolvedIn

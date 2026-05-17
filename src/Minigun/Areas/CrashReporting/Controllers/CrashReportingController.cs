@@ -86,4 +86,16 @@ public class CrashReportingController : Controller
 
         return PartialView("_ErrorTimeseries", errorTimeseries);
     }
+    
+    [HttpGet("/crashreporting/error-group-count")]
+    public async Task<IActionResult> ErrorGroupCount(
+        [FromQuery] string applicationIdentifier,
+        [FromQuery] string errorGroupId,
+        [FromQuery] DateTime startTime,
+        [FromQuery] DateTime endTime
+        )
+    {
+        var count = await _raygunApiService.GetErrorGroupCountAsync(applicationIdentifier, errorGroupId, startTime, endTime);
+        return Content(count.ToString("N0"));
+    }
 }

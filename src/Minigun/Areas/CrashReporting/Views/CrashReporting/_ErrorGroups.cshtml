@@ -28,9 +28,10 @@
                         <label for="checkbox-all" class="sr-only">checkbox</label>
                     </div>
                 </th>
-                <th scope="col" class="px-4 py-2 w-2/3">Message</th>
+                <th scope="col" class="px-4 py-2 w-2/5">Message</th>
                 <th scope="col" class="px-4 py-2 w-1/6">Last seen</th>
-                <th scope="col" class="px-4 py-2 w-1/6">Status</th>
+                <th scope="col" class="px-4 py-2 w-1/6">First seen</th>
+                <th scope="col" class="px-4 py-2 w-1/6">Count</th>
             </tr>
             </thead>
         </table>
@@ -41,60 +42,172 @@
     </div>
 
     <div class="m-4 bg-white border border-secondary-blue-grey">
-        <div class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200">
-            <div class="px-4 py-3 bg-gray-100">
-                Active <span class="ml-2 bg-red-500 text-white rounded-full px-2 py-1">@Model.Count(e => e.Status == "active")</span>
-            </div>
-            <div class="px-4 py-3">
-                Resolved <span class="ml-2 bg-green-500 text-white rounded-full px-2 py-1">@Model.Count(e => e.Status == "resolved")</span>
-            </div>
-            <div class="px-4 py-3">
-                Ignored <span class="ml-2 bg-blue-500 text-white rounded-full px-2 py-1">@Model.Count(e => e.Status == "ignored")</span>
-            </div>
-            <div class="px-4 py-3">
-                Permanently ignored <span class="ml-2 bg-yellow-500 text-white rounded-full px-2 py-1">@Model.Count(e => e.Status == "permanentlyignored")</span>
-            </div>
+        @{
+            var activeCount = Model.Count(e => e.Status == "active");
+            var resolvedCount = Model.Count(e => e.Status == "resolved");
+            var ignoredCount = Model.Count(e => e.Status == "ignored");
+            var permanentlyIgnoredCount = Model.Count(e => e.Status == "permanentlyignored");
+        }
+
+        <div class="flex flex-wrap text-sm font-medium text-center border-b border-gray-200">
+            <button class="px-4 py-3 bg-gray-100 status-tab active font-bold !text-black" data-status="active" @(activeCount == 0 ? "disabled" : "")>
+                Active <span class="ml-2 bg-red-500 text-white rounded-full px-2 py-1">@activeCount</span>
+            </button>
+            <button class="px-4 py-3 status-tab text-gray-500 @(resolvedCount == 0 ? "cursor-not-allowed opacity-50" : "hover:bg-gray-50")" data-status="resolved" @(resolvedCount == 0 ? "disabled" : "")>
+                Resolved <span class="ml-2 bg-green-500 text-white rounded-full px-2 py-1">@resolvedCount</span>
+            </button>
+            <button class="px-4 py-3 status-tab text-gray-500 @(ignoredCount == 0 ? "cursor-not-allowed opacity-50" : "hover:bg-gray-50")" data-status="ignored" @(ignoredCount == 0 ? "disabled" : "")>
+                Ignored <span class="ml-2 bg-blue-500 text-white rounded-full px-2 py-1">@ignoredCount</span>
+            </button>
+            <button class="px-4 py-3 status-tab text-gray-500 @(permanentlyIgnoredCount == 0 ? "cursor-not-allowed opacity-50" : "hover:bg-gray-50")" data-status="permanentlyignored" @(permanentlyIgnoredCount == 0 ? "disabled" : "")>
+                Permanently ignored <span class="ml-2 bg-yellow-500 text-white rounded-full px-2 py-1">@permanentlyIgnoredCount</span>
+            </button>
         </div>
 
-        <table class="w-full text-sm text-left text-gray-500 table-fixed">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-            <tr>
-                <th scope="col" class="p-4 w-12">
-                    <div class="flex items-center">
-                        <input id="checkbox-all" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
-                        <label for="checkbox-all" class="sr-only">checkbox</label>
-                    </div>
-                </th>
-                <th scope="col" class="px-4 py-2 w-2/3">Message</th>
-                <th scope="col" class="px-4 py-2 w-1/6">Last seen</th>
-                <th scope="col" class="px-4 py-2 w-1/6">Status</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach (var errorGroup in Model)
-            {
-                <tr class="bg-white border-b hover:bg-gray-50">
-                    <td class="w-12 p-4">
+        @{
+            var activeErrors = Model.Where(e => e.Status == "active");
+            var resolvedErrors = Model.Where(e => e.Status == "resolved");
+            var ignoredErrors = Model.Where(e => e.Status == "ignored");
+            var permanentlyIgnoredErrors = Model.Where(e => e.Status == "permanentlyignored");
+        }
+
+        <!-- Active Errors -->
+        <div class="status-content" data-status="active">
+            <table class="w-full text-sm text-left text-gray-500 table-fixed">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th scope="col" class="p-4 w-12">
                         <div class="flex items-center">
-                            <input id="checkbox-@errorGroup.Identifier" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
-                            <label for="checkbox-@errorGroup.Identifier" class="sr-only">checkbox</label>
+                            <input id="checkbox-all-active" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="checkbox-all-active" class="sr-only">checkbox</label>
                         </div>
-                    </td>
-                    <td class="px-4 py-2 font-medium text-gray-900 truncate">
-                        <a href="@errorGroup.ApplicationUrl" class="font-medium text-blue-600 hover:underline">@errorGroup.Message</a>
-                    </td>
-                    <td class="px-4 py-2 whitespace-nowrap text-red-600">
-                        @{
-                            var lastSeenText = errorGroup.LastOccurredAt.ToHumanReadableTimeAgo();
-                        }
-                        @lastSeenText
-                    </td>
-                    <td class="px-4 py-2 whitespace-nowrap">
-                        @(errorGroup.ResolvedIn != null ? "Resolved" : "Active")
-                    </td>
+                    </th>
+                    <th scope="col" class="px-4 py-2 w-2/5">Message</th>
+                    <th scope="col" class="px-4 py-2 w-1/6">Last seen</th>
+                    <th scope="col" class="px-4 py-2 w-1/6">First seen</th>
+                    <th scope="col" class="px-4 py-2 w-1/6">Count</th>
                 </tr>
-            }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                @foreach (var errorGroup in activeErrors)
+                {
+                    @await Html.PartialAsync("_ErrorGroupRow", errorGroup)
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Resolved Errors -->
+        <div class="status-content" data-status="resolved" style="display: none;">
+            <table class="w-full text-sm text-left text-gray-500 table-fixed">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th scope="col" class="p-4 w-12">
+                        <div class="flex items-center">
+                            <input id="checkbox-all-resolved" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="checkbox-all-resolved" class="sr-only">checkbox</label>
+                        </div>
+                    </th>
+                    <th scope="col" class="px-4 py-2 w-2/5">Message</th>
+                    <th scope="col" class="px-4 py-2 w-1/6">Last seen</th>
+                    <th scope="col" class="px-4 py-2 w-1/6">First seen</th>
+                    <th scope="col" class="px-4 py-2 w-1/6">Count</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var errorGroup in resolvedErrors)
+                {
+                    @await Html.PartialAsync("_ErrorGroupRow", errorGroup)
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Ignored Errors -->
+        <div class="status-content" data-status="ignored" style="display: none;">
+            <table class="w-full text-sm text-left text-gray-500 table-fixed">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th scope="col" class="p-4 w-12">
+                        <div class="flex items-center">
+                            <input id="checkbox-all-ignored" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="checkbox-all-ignored" class="sr-only">checkbox</label>
+                        </div>
+                    </th>
+                    <th scope="col" class="px-4 py-2 w-2/5">Message</th>
+                    <th scope="col" class="px-4 py-2 w-1/6">Last seen</th>
+                    <th scope="col" class="px-4 py-2 w-1/6">First seen</th>
+                    <th scope="col" class="px-4 py-2 w-1/6">Count</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var errorGroup in ignoredErrors)
+                {
+                    @await Html.PartialAsync("_ErrorGroupRow", errorGroup)
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Permanently Ignored Errors -->
+        <div class="status-content" data-status="permanentlyignored" style="display: none;">
+            <table class="w-full text-sm text-left text-gray-500 table-fixed">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th scope="col" class="p-4 w-12">
+                        <div class="flex items-center">
+                            <input id="checkbox-all-permanent" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="checkbox-all-permanent" class="sr-only">checkbox</label>
+                        </div>
+                    </th>
+                    <th scope="col" class="px-4 py-2 w-2/5">Message</th>
+                    <th scope="col" class="px-4 py-2 w-1/6">Last seen</th>
+                    <th scope="col" class="px-4 py-2 w-1/6">First seen</th>
+                    <th scope="col" class="px-4 py-2 w-1/6">Count</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var errorGroup in permanentlyIgnoredErrors)
+                {
+                    @await Html.PartialAsync("_ErrorGroupRow", errorGroup)
+                }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.status-tab:not([disabled])');
+    const contents = document.querySelectorAll('.status-content');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            if (this.disabled) return;
+            
+            const selectedStatus = this.dataset.status;
+            
+            // Update active tab
+            tabs.forEach(t => {
+                t.classList.remove('active', 'bg-gray-100', 'font-bold', '!text-black');
+                t.classList.add('text-gray-500');
+                if (!t.disabled) {
+                    t.classList.add('hover:bg-gray-50');
+                }
+            });
+            this.classList.add('active', 'bg-gray-100', 'font-bold', '!text-black');
+            this.classList.remove('hover:bg-gray-50', 'text-gray-500');
+            
+            // Show/hide content sections
+            contents.forEach(content => {
+                if (content.dataset.status === selectedStatus) {
+                    content.style.display = '';
+                } else {
+                    content.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>

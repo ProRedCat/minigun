@@ -3,6 +3,12 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    @{
+        var canonicalHost = "https://minigun.proredcat.xyz";
+        var path = Context?.Request?.Path.Value ?? string.Empty;
+        var canonicalUrl = $"{canonicalHost}{(string.IsNullOrEmpty(path) ? "/" : path)}";
+    }
+    <link rel="canonical" href="@canonicalUrl"/>
     <title>Minigun - @ViewData["Title"]</title>
 
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
@@ -27,6 +33,9 @@
         <div id="minigun-content" class="flex-1 overflow-y-auto">
             @RenderBody()
         </div>
+        <footer class="fixed bottom-0 right-0 p-2 text-xs text-gray-500">
+            @await Component.InvokeAsync("RuntimeInfo")
+        </footer>
     </main>
 </div>
 </body>
