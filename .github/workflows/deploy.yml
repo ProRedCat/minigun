@@ -21,7 +21,8 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "10.0.x"
+          dotnet-version: "11.0.100-preview.4.26230.115"
+          dotnet-quality: "preview"
 
       - name: Install bun
         uses: oven-sh/setup-bun@v2
