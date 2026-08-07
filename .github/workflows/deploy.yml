@@ -1,39 +1,35 @@
-name: Deploy to Amazon Linux EC2
+name: Deploy Minigun
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - "**"
+      - main
+
+concurrency:
+  group: minigun-production
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Set outputs
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Set up .NET Core
+      - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "11.0.100-preview.4.26230.115"
-          dotnet-quality: "preview"
+          dotnet-quality: preview
 
-      - name: Install bun
+      - name: Install Bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Template appsettings.json
-        run: |
-          sed -i 's|#{RAYGUN_API_KEY}|'"$RAYGUN_API_KEY"'|g' src/Minigun/appsettings.json
-        env:
-          RAYGUN_API_KEY: ${{ secrets.RAYGUN_API_KEY }}
-
-      - name: Publish .NET Core app
+      - name: Publish application
         run: >
           dotnet publish src/Minigun/Minigun.csproj
           -c Release
@@ -44,74 +40,58 @@ jobs:
           -p:PublishSingleFile=true
           -p:IncludeNativeLibrariesForSelfExtract=true
 
-      - name: Stop Application on EC2
+      - name: Package release
+        run: tar -C publish -czf "minigun-${GITHUB_SHA}.tar.gz" .
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minigun-${{ github.sha }}
+          path: minigun-${{ github.sha }}.tar.gz
+          if-no-files-found: error
+          retention-days: 3
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      TAILSCALE_HOST: minigun-prod
+
+    steps:
+      - name: Download release artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: minigun-${{ github.sha }}
+
+      - name: Connect to the tailnet
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ vars.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ vars.TS_AUDIENCE }}
+          tags: tag:minigun-ci
+
+      - name: Upload and activate release
         env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          RELEASE_ID: ${{ github.sha }}
         run: |
-          echo "$EC2_SSH_KEY" > ./ec2_key.pem
-          chmod 600 ./ec2_key.pem
+          set -Eeuo pipefail
+          archive="minigun-${RELEASE_ID}.tar.gz"
+          remote_archive="/var/lib/minigun-deploy/uploads/${archive}"
 
-          # Disable host key checking
-          mkdir -p ~/.ssh
-          echo -e "Host *\n\tStrictHostKeyChecking no" > ~/.ssh/config
+          tailscale ssh "minigun-deploy@${TAILSCALE_HOST}" \
+            "umask 077 && cat > '${remote_archive}'" < "${archive}"
+          tailscale ssh "minigun-deploy@${TAILSCALE_HOST}" \
+            "sudo /usr/local/sbin/minigun-deploy-release '${RELEASE_ID}'"
 
-          ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
-            sudo systemctl stop minigun || true
-          EOF
-
-          sleep 2
-
-      - name: Prepare deployment directory on EC2
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ${{ secrets.EC2_USER }}
-          DEPLOY_DIR: /var/www/minigun
-        run: |
-          ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST "sudo mkdir -p '$DEPLOY_DIR' && sudo chown -R '$EC2_USER' '$DEPLOY_DIR' && sudo chmod 755 '$DEPLOY_DIR'"
-
-      - name: Upload files to EC2
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-          DEPLOY_DIR: /var/www/minigun
-        run: |
-          # Upload files to EC2
-          scp -i ./ec2_key.pem -r ./publish/* $EC2_USER@$EC2_HOST:$DEPLOY_DIR/
-
-          # Upload systemd unit file and install it
-          scp -i ./ec2_key.pem ./deploy/minigun.service $EC2_USER@$EC2_HOST:/tmp/minigun.service
-          ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
-            sudo mv /tmp/minigun.service /etc/systemd/system/minigun.service
-            sudo chown root:root /etc/systemd/system/minigun.service
-            sudo chmod 644 /etc/systemd/system/minigun.service
-            sudo systemctl daemon-reload
-            sudo systemctl enable minigun
-          EOF
-          
-      - name: Create Raygun Deployment
+      - name: Record Raygun deployment
         uses: MindscapeHQ/raygun-deployments-action@v1
         with:
           personal-access-token: ${{ secrets.RAYGUN_PAT }}
           api-key: ${{ secrets.RAYGUN_API_KEY }}
-          version: ${{ steps.vars.outputs.sha_short }}
+          version: ${{ github.sha }}
           comment: ${{ github.event.head_commit.message || format('Manual deployment for {0}', github.sha) }}
-
-      - name: Start Application on EC2
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-          DEPLOY_DIR: /var/www/minigun
-        run: |
-          ssh -i ./ec2_key.pem $EC2_USER@$EC2_HOST << EOF
-            set -x
-
-            sudo systemctl start minigun
-            sudo systemctl status minigun --no-pager
-          EOF
-
-      - name: Clean up
-        run: rm -f ./ec2_key.pem

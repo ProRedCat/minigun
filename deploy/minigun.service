@@ -1,10 +1,11 @@
 [Unit]
 Description=Minigun ASP.NET Core Application
-After=network.target
+After=network-online.target
+Wants=network-online.target
 
 [Service]
-WorkingDirectory=/var/www/minigun
-ExecStart=/var/www/minigun/Minigun
+WorkingDirectory=/opt/minigun/current
+ExecStart=/opt/minigun/current/Minigun
 Restart=always
 RestartSec=10
 KillSignal=SIGINT
@@ -12,6 +13,7 @@ SyslogIdentifier=minigun
 User=root
 Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+EnvironmentFile=/etc/minigun/minigun.env
 
 [Install]
 WantedBy=multi-user.target
