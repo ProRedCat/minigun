@@ -18,13 +18,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6.0.0
         with:
           dotnet-version: "11.0.100-preview.4.26230.115"
-          dotnet-quality: preview
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
@@ -44,7 +43,7 @@ jobs:
         run: tar -C publish -czf "minigun-${GITHUB_SHA}.tar.gz" .
 
       - name: Upload release artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: minigun-${{ github.sha }}
           path: minigun-${{ github.sha }}.tar.gz
@@ -64,7 +63,7 @@ jobs:
 
     steps:
       - name: Download release artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8.0.1
         with:
           name: minigun-${{ github.sha }}
 
